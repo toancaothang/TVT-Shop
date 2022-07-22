@@ -1,4 +1,4 @@
- <!-- shop-products-wrapper start -->
+<!-- shop-products-wrapper start -->
                                 <div class="tab-content">
                                     <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
                                         <div class="product-area shop-product-area">
@@ -89,13 +89,13 @@
                                                             <div class="add-actions">
                                                                 <ul class="add-actions-link">
                                                                 <input class="cart-plus-minus-box " value="1" type="hidden" name="quaninput">
-                                                                @if($dahethang>0)
+                                                             
                                                                <li style="width:145px;"> <button class="add-cart active" type="submit" style="border:none;width:145px;background-color:#FFCB09;color:black;" > Thêm Vào Giỏ Hàng </button></li>
                                                                     
                                                                     </form> 
                                                                     
                                                                     <li><a href="#" title="Xem Nhanh Sản Phẩm" class="quick-view-btn" data-toggle="modal" data-target="#xemnhanh-{{$value->id}}"><i class="fa fa-eye"></i></a></li>
-                                                                    @endif
+                                                                    
                                                                     <form action="{{route('wish_list',['id'=>$value->id])}}" class="wishlist_add" method="POST">
                                                                 @csrf
                                                               <span id="wish-{{$value->id}}">
@@ -113,7 +113,7 @@
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                                     </div>
-                                                    <!-- Begin Quick View | Modal Area -->
+                                                     <!-- Begin Quick View | Modal Area -->
             <div class="modal fade modal-wrapper" id="xemnhanh-{{$value->id}}" >
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -145,7 +145,7 @@
                                     <div class="col-lg-7 col-md-6 col-sm-6">
                                         <div class="product-details-view-content pt-60">
                                             <div class="product-info">
-                                                <h2>{{$value->model_name}} </h2>
+                                                <h2 style="font-size:25px;">{{$value->model_name}} </h2>
                                             <div class="rating-box pt-20">
                                                     <ul class="rating rating-with-review-item">
                                                     @for($i=1;$i<=$value->total_rated;$i++)
@@ -181,12 +181,7 @@
                                                             @endif
                                                 </div>
                                                 
-                                                <div class="product-desc">
-                                                    <p>
-                                                        <span>{{$value->description}}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                                
                                                 <div class="product-variants">
                                                     <div class="produt-variants-size">
                                                     <label>Chọn Mẫu Khác Của {{$value->model_name}} </label>

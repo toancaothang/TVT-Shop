@@ -38,7 +38,21 @@
                         </div>
                         <div class="col-md-6 form-group mb-3">
                             <label for="" class="col-form-label">Màu *</label>
-                            <input type="text" class="form-control" name="color" id="color" value="{{$thongtin->color}}" placeholder="Nhập màu" >
+                            <select class="form-control" name="color" id="color">
+                                @if ($thongtin->color == "Đen")
+                                    <option selected value="Đen">Đen</option>
+                                    <option value="Trắng">Trắng</option>
+                                    <option value="Xanh">Xanh</option>
+                                @elseif($thongtin->color == "Trắng")
+                                    <option value="Đen">Đen</option>
+                                    <option selected value="Trắng">Trắng</option>
+                                    <option value="Xanh">Xanh</option>
+                                @else
+                                    <option selected value="Đen">Đen</option>
+                                    <option value="Trắng">Trắng</option>
+                                    <option selected value="Xanh">Xanh</option>
+                                @endif
+                              </select>
                         </div>
                     </div>
                     <div class="row">

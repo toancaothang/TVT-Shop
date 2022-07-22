@@ -45,6 +45,8 @@ Route::group(['prefix' => '/'], function () {
     Route::get('ThongKeTheoNgay',[Admin\ThongkeController::class, 'ThongKeTheoNgay'])->name('ThongKeTheoNgay');
     Route::get('create/{Tong}','App\Http\Controllers\Admin\ThongkeController@TimKiemThongKeTheoNgay')->name('TimKiemThongKeTheoNgay');
     Route::get('TimKiemTheoNam/{TKNam}','App\Http\Controllers\Admin\ThongkeController@TimKiemTheoNam')->name('TimKiemTheoNam');
+    Route::get('LoadBangDanhSach',[Admin\ThongkeController::class, 'LoadBangDanhSach'])->name('LoadBangDanhSach');
+    Route::get('Doanhthucaonhat',[Admin\ThongkeController::class, 'Doanhthucaonhat'])->name('Doanhthucaonhat');
 });
 //Sản phẩm model
 Route::group(['prefix' => 'modelsanpham'], function() {

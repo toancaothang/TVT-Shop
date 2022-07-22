@@ -4183,7 +4183,6 @@ thead {
 	text-transform: uppercase;
 	position: relative;
 	margin-bottom: 52px;
-	font-family: Poppins;
 }
 .li-blog-sidebar .li-blog-sidebar-title::before {
 	width: 55px;
@@ -4251,7 +4250,6 @@ thead {
 	line-height: 30px;
 	font-weight: 600;
 	text-transform: capitalize;
-	font-family: Poppins;
 	padding-bottom: 15px;
 	margin: 0;
 }
@@ -5466,6 +5464,32 @@ span.required {
 	color:#0080FF;
 	
 	
+}
+.show-description{
+	height:150px;
+	overflow:hidden;
+}
+.morebutp{
+	width:100px;
+	height:40px;
+	background-color:white;
+	border-radius:2px;
+     border:solid #0080FF 1px;
+	 border-radius:2px;
+	text-align: center;
+	padding-top:8px;
+}
+.morebutp{
+	color:#0080FF;
+}
+.morebutp::before{
+	content:'Đọc Thêm';
+}
+.product-description.active .morebutp::before{
+	content:'Thu Gọn';
+}
+.product-description.active .show-description{
+	height:auto;
 }
 
 /*----------------------------------------------------------------------------------------------------*/

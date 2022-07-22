@@ -1,5 +1,27 @@
 @extends('layout/header_footer')
 @section('main')
+<script >
+  $(document).ready(function(){
+    $('#sortpro').change(function () {
+   var sort=$(this).val();
+   var ramvalue=get_ram('.ramvalue');
+   var capavalue=get_dungluong('.capavalue');
+    var url=$('#url').val();
+   
+    $.ajax({
+url:url,
+method:"get",
+dataType: "html",
+data:{capavalue:capavalue,ramvalue:ramvalue,sort:sort,url:url},
+success:function(data){
+    $(' .ajaxupdate').html(data);
+}
+    });
+
+ 
+}); 
+  })
+  </script>
 <!-- Begin Li's Breadcrumb Area -->
 
             <!-- Begin Li's Content Wraper Area -->
@@ -11,17 +33,8 @@
                            
                             <!-- Li's Banner Area End Here -->
                             <!-- shop-top-bar start -->
-                            <div class="shop-top-bar mt-30">
-                                <div class="shop-bar-inner">
-                                   <div class="toolbar-amount">
-                                  
-                                    </div>
-                                </div>
-                               <!-- product-select-box start -->
-                                
-                                <!-- product-select-box end -->
-                            </div>
-                            <!-- shop-top-bar end -->
+                           <!-- shop-top-bar end -->
+                            @if(count($data))
                             <!-- shop-products-wrapper start -->
                             <div class="shop-products-wrapper">
                                 <div class="tab-content">
@@ -35,7 +48,7 @@
                                                     <!-- single-product-wrap start -->
                                                   <div class="single-product-wrap">
                                                         <div class="product-image">
-                                                            <a href="{{route('chitiet_sanpham',['cateid'=>$searchrs->category_id,'id'=>$searchrs->id])}}">
+                                                            <a href="{{route('chitiet_sanpham',['cateid'=>$searchrs->category_id,'id'=>$searchrs->mid])}}">
                                                                 <img src="{{url('website/product')}}/{{$searchrs->image}}" alt="Li's Product Image">
                                                             </a>
                                                             <span class="sticker">Mới</span>
@@ -58,7 +71,7 @@
                                                                         
                                                                     </div>
                                                                 </div>
-                                                                <h4><a class="product_name" href="{{route('chitiet_sanpham',['cateid'=>$searchrs->category_id,'id'=>$searchrs->id])}}">{{$searchrs->model_name}} {{$searchrs->capacity}}GB</a></h4>
+                                                                <h4><a class="product_name" href="{{route('chitiet_sanpham',['cateid'=>$searchrs->category_id,'id'=>$searchrs->mid])}}">{{$searchrs->model_name}} {{$searchrs->capacity}}GB</a></h4>
                                                                 <form action="{{route('com_pare',['id'=>$searchrs->mid])}}" class="compare_add" method="POST" >
                                                             @csrf
                                                   <span id="compares-{{$searchrs->mid}}">
@@ -69,16 +82,10 @@
  
                                            </form>
                                            @php
-                                    $dahethang=0;
-                                    @endphp
-                                    @foreach($hethang as $hh)
-                                    @if($hh->mid==$searchrs->mid)
-                                    @php 
-                                    $dahethang+=$hh->stock;
-                                    @endphp
-                                    @endif
-                                    @endforeach
-                                    @if($dahethang==0)
+                                             $stocked=0;
+                                     $stocked+=$searchrs->stock;
+                                               @endphp
+                                       @if($stocked==0)
                                     <div class="price-box">
                                                             <span class="new-price new-price-2" id="price1">Đã Hết Hàng</span>
                                                             <span id="salefix1">
@@ -91,10 +98,12 @@
                                                              <span id="salefix1">
                                                         <span class="old-price">{{number_format($searchrs->price)}}<u> đ</u></span>
                                                         <span class="discount-percentage">-{{$searchrs->sale}}%</span>
+                                                        @endif
                                                         </span>
-                                                        @endif
-                                                        @endif
+                                                        
+                                                        
                                                                 </div>
+                                                                @endif
                                                             </div>
                                                             
                                                             <div class="add-actions">
@@ -103,13 +112,13 @@
                                                                @csrf
                                                                 <input value="1" type="hidden" name="quaninput">
                                                                 <input type="hidden" value=" <?php echo $searchrs->id;?>" name="productid"/>
-                                                                @if($dahethang>0)
+                                                                @if($stocked>0)
                                                                 <li style="width:145px;"> <button class="add-cart active" type="submit" style="border:none;width:145px;background-color:#FFCB09;color:black;" > Thêm Vào Giỏ Hàng </button></li>
-                                                                </form>
                                                                 @else
                                                                 <li style="width:145px;"> <button class="add-cart active" style="border:none;width:145px;background-color:#FFCB09;color:black;" ><a href="#" style="color:black;"> Đã Hết Hàng</a></button></li>
                                                                   @endif
-                                                                 <form action="{{route('wish_list',['id'=>$searchrs->mid])}}" class="wishlist_add" method="POST">
+                                                                </form>
+                                                             <form action="{{route('wish_list',['id'=>$searchrs->mid])}}" class="wishlist_add" method="POST">
                                                                 @csrf
                                                               <span id="wish">
                                                                 
@@ -126,16 +135,43 @@
                                                   
                                                     <!-- single-product-wrap end -->
                                                 </div>
-                                               
                                                 @endforeach
                                             </div>
                                         </div>
                                     </div>
-                
-                                    
+                 <div class="paginatoin-area">
+                                        {!!$data->links('giaodien/partials.paginate')!!}
+                                            
+                                        </div>
                                 </div>
                             </div>
                             <!-- shop-products-wrapper end -->
+                            @else
+ <!-- Error 404 Area Start -->
+ <div class="error404-area pt-30 pb-60">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="error-wrapper text-center ptb-50 pt-xs-20">
+                                <div class="error-text">
+                                   <h2>không Tìm Thấy Sản Phẩm</h2>
+                                    <p>Vui Lòng Nhập Tìm Kiếm Sản Phẩm Hợp Lệ </p>
+                                </div>
+                                <div class="search-error">
+                                <img src=" {{asset('images/menu/logo/nosearch.jpg')}}" alt="" style="width:100px;" >
+                                </div>
+                                <div class="error-button" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Error 404 Area End -->
+
+
+                                
+                                @endif
                         </div>
                     </div>
                 </div>

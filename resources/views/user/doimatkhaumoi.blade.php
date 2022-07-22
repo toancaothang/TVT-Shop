@@ -55,7 +55,7 @@
             <form action="{{route('change_fpassword',['id'=>$id->id,'token'=>$id->remember_token])}}" method="POST" enctype = multipart/form-data>
             @csrf
           <div class="form-group">
-                  <input type="password" class="form-control" placeholder="Nhập vào mật khẩu mới..." required name="newpass">
+                  <input type="password" class="form-control" placeholder="Nhập vào mật khẩu mới..." required name="newpass"><br>
                   <input type="password" class="form-control" placeholder="Xác nhận mật khẩu mới..." required name="newpasscf">
                </div>
            

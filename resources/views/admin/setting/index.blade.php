@@ -1,6 +1,3 @@
-   
-
-
 @extends('admin.app')
 @section('title') Dashboard @endsection
 @section('content')
@@ -127,6 +124,7 @@ input[type="search"] {
       });
   });
   })
+  </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
@@ -142,7 +140,7 @@ input[type="search"] {
     .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
 </style>
 
-</script>
+
 
 @endsection
     

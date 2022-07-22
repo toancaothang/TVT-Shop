@@ -80,7 +80,7 @@ $.ajax({
                                             <h5>Giảm giá <span>10%</span> Tuần Này</h5>
                                             <h2>Realme 8 Series</h2>
                                             <div class="default-btn slide-btn">
-                                                <a class="links" href="shop-left-sidebar.html">Mua Ngay</a>
+                                                <a class="links" href="{{route('chitiet_sanpham',['cateid'=>6,'id'=>33])}}">Mua Ngay</a>
                                             </div>
                                         </div>
                                     </div>
@@ -92,7 +92,7 @@ $.ajax({
                                             <h5>Giảm giá <span>8% </span> Tuần Này</h5>
                                             <h2> Samsung Galaxy S22 Ultra 5G </h2>
                                            <div class="default-btn slide-btn">
-                                                <a class="links" href="">Mua Ngay</a>
+                                                <a class="links" href="{{route('chitiet_sanpham',['cateid'=>1,'id'=>20])}}">Mua Ngay</a>
                                             </div>
                                         </div>
                                     </div>
@@ -104,7 +104,7 @@ $.ajax({
                                             <h5>Giảm giá <span>8%</span> Tuần Này</h5>
                                             <h2>Iphone 13 Pro Max</h2>
                                           <div class="default-btn slide-btn">
-                                                <a class="links" href="shop-left-sidebar.html">Mua Ngay</a>
+                                                <a class="links" href="{{route('chitiet_sanpham',['cateid'=>2,'id'=>26])}}">Mua Ngay</a>
                                             </div>
                                         </div>
                                     </div>
@@ -117,12 +117,12 @@ $.ajax({
                         <!-- Begin Li Banner Area -->
                         <div class="col-lg-4 col-md-4 text-center pt-sm-30 pt-xs-30">
                             <div class="li-banner">
-                                <a href="#">
+                                <a href="{{route('chitiet_sanpham',['cateid'=>1,'id'=>20])}}">
                                     <img src="images/banner/xiaomi-redmi-note-10-3-1024x682.jpg" alt="">
                                 </a>
                             </div>
                             <div class="li-banner mt-15 mt-md-30 mt-xs-25 mb-xs-5">
-                                <a href="#">
+                                <a href="{{route('chitiet_sanpham',['cateid'=>9,'id'=>31])}}">
                                     <img src="images/banner/banner-PC.jpg" alt="">
                                 </a>
                             </div>
@@ -157,12 +157,12 @@ $.ajax({
                                     <p style="height: 10px;font-size: 20px;color: #dc0e0e;font-weight: bold;margin-top: -13px; margin-left: 15px;"> Giảm {{$cp->coupon_number}}% </p>
                                          </div>
                                          <div>
-                                         <p style="    margin-left: 29px;font-size: 14px;color: #393434;font-weight:bold;"> Điều Kiện: Người Dùng Đã Đăng Ký </p>
+                                         <p style="margin-left: 29px;font-size: 14px;color: #393434;font-weight:bold;"> Điều Kiện: Người Dùng Đã Đăng Ký </p>
                                          <input type="text" value="{{$cp->coupon_code}}" id="couponcode" style="display:none;">
                                          <button style="border: none;color: white;background-color: #c41212;width: 114px;border-radius: 2px;height: 35px; margin-left: 178px; margin-top: -9px;font-weight: bold;}" onclick="copcode()" type="submit"> Sao Chép Mã </button>
                                          </div>
 <script>
-    function copcode(id) {
+    function copcode() {
   /* Get the text field */
   var copyText = document.getElementById("couponcode");
 
@@ -174,7 +174,7 @@ $.ajax({
   navigator.clipboard.writeText(copyText.value);
 
   /* Alert the copied text */
-  alert("Đã Lấy Mã: " + copyText.value);
+  swal("Đã lấy mã "+copyText.value,"Bạn có thể sử dụng mã giảm giá khi thanh toán","success");
 }
     </script>
                                
@@ -219,15 +219,7 @@ $.ajax({
                             <div class="row">
                                 <div class="product-active owl-carousel">
                                 @foreach($newpro as $value)
-                                @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($value->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang>0)
+                               
                                     <div class="col-lg-12">
                                        <!-- single-product-wrap start -->
                                        <div class="single-product-wrap" id="updateDiv">
@@ -271,7 +263,7 @@ $.ajax({
                                                                 <form action="{{route('add_cart',['id'=>$value->id])}}" class="cart-quantity" method="POST" enctype="multipart/form-data" style="margin-top:-4px;">
                                                                 @php $exsale=$value->getpro->first()->sale*$value->getpro->first()->price/100; @endphp
                                                                 @csrf
-                                                               <span class="new-price new-price-2" id="price-{{ $value->id }}">{{number_format($value->getpro->first()->price-$exsale)}} <u>đ</u>
+                                                               <span class="new-price new-price-2" id="price-{{$value->id}}">{{number_format($value->getpro->first()->price-$exsale)}} <u>đ</u>
                                                              <input type="hidden" value=" <?php echo $value->getpro->first()->id;?>" name="productid" />
                                                             </span>
                                                                @if($value->getpro->first()->sale)
@@ -316,7 +308,7 @@ $.ajax({
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                     </div>
-                                    @endif
+                                   
                                     @endforeach
                                 </div>
                             </div>
@@ -325,13 +317,7 @@ $.ajax({
                             <div class="row">
                                 <div class="product-active owl-carousel">
                                 @foreach($sale as $searchrs)
-                                @php
-                                $hethang=0;
-                               @endphp
-                                @php
-                                $hethang +=$searchrs->stock;
-                              @endphp
-                                 @if($hethang>0)
+                             
                                  <div class="col-lg-12">
                                       
                                                     <!-- single-product-wrap start -->
@@ -407,7 +393,7 @@ $.ajax({
                                                   
                                                     <!-- single-product-wrap end -->
                                     </div>
-                              @endif
+                           
                                     @endforeach
                                 </div>
                             </div>
@@ -424,7 +410,7 @@ $.ajax({
                         <!-- Begin Single Banner Area -->
                         <div class="col-lg-6">
                             <div class="single-banner pb-sm-30 pb-xs-30">
-                                <a href="#">
+                                <a href="{{route('chitiet_sanpham',['cateid'=>8,'id'=>34])}}">
                                     <img src="images/banner/Vivo-V23e-ban.jpg" alt="Li's Static Banner">
                                 </a>
                             </div>
@@ -433,7 +419,7 @@ $.ajax({
                         <!-- Begin Single Banner Area -->
                         <div class="col-lg-6">
                             <div class="single-banner">
-                                <a href="#">
+                                <a href="{{route('chitiet_sanpham',['cateid'=>9,'id'=>35])}}">
                                     <img src="images/banner/Vivo-V23e-banner.jpg" alt="Li's Static Banner">
                                 </a>
                             </div>
@@ -451,22 +437,14 @@ $.ajax({
                         <div class="col-lg-12">
                             <div class="li-section-title">
                                 <h2>
-                                    <span>SamSung</span>
+                                    <span>Samsung</span>
                                 </h2>
                                
                             </div>
                             <div class="row">
                                 <div class="product-active owl-carousel">
                                     @foreach($samsung as $value)
-                                    @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($value->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang>0)
+                                    
                                     <div class="col-lg-12">
                                        <!-- single-product-wrap start -->
                                        <div class="single-product-wrap" id="updateDiv">
@@ -553,7 +531,7 @@ $.ajax({
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                     </div>
-                            @endif
+                          
                                     @endforeach
                                 </div>
                             </div>
@@ -578,15 +556,7 @@ $.ajax({
                             <div class="row">
                                 <div class="product-active owl-carousel">
                                 @foreach($apple as $value)
-                                @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($value->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang>0)
+                               
                                     <div class="col-lg-12">
                                          <!-- single-product-wrap start -->
                                        <div class="single-product-wrap" id="updateDiv">
@@ -673,7 +643,7 @@ $.ajax({
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                     </div>
-                                    @endif
+                                 
                                     @endforeach
                                 </div>
                             </div>
@@ -697,7 +667,7 @@ $.ajax({
                                 <h2>Motorola Đổ Bộ Đến TvT Shop</h2>
                                 </br>
                                <div class="default-btn">
-                                    <a href="shop-left-sidebar.html" class="links">Mua Ngay</a>
+                                    <a href="{{route('hienthi_danhmuc',['id'=>4])}}" class="links">Mua Ngay</a>
                                 </div>
                             </div>
                             <!-- Li's Static Home Content Area End Here -->
@@ -717,15 +687,7 @@ $.ajax({
                                     </h2>
                                 </div>
                                 @foreach($toprate as $tr)
-                                @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($tr->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang>0)
+                               
                         <div class="col-lg-4">
                     
                             <div class="featured-product">
@@ -778,7 +740,7 @@ $.ajax({
                         </div>
                       
                         <!-- Featured Product Area End Here -->
-                        @endif
+                       
                         @endforeach
 
                     </div>

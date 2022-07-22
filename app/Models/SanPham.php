@@ -16,8 +16,6 @@ class SanPham extends Model
         'price',
         'sale',
         'stock',
-        
-    
     ];
 
     public function getModelProduct(){

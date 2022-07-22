@@ -13,8 +13,8 @@ class HoadonController extends Controller
 {
     function index()
     {
-        $dshoadon = DB::table('bill')->get();  
-        
+        $dshoadon = DB::table('bill') 
+        ->orderBy('id','DESC')->get(); 
         return view('admin.hoadon.index',compact('dshoadon'));
     }
     

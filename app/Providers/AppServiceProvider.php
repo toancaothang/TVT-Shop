@@ -41,7 +41,8 @@ $view->with(['category'=>DanhMuc::where('status',1)->orderBy('category_name','AS
            'product.price',
            'product.sale',
            'product_model.id',
-           'product_model.category_id'
+           'product_model.category_id',
+           'product.stock'
     ]);
     $view->with('quickcart', $quickcart );
 }

@@ -129,7 +129,7 @@
               <span>Thống kê</span>
             </a>
           </li>
-          <li>
+          <!-- <li>
             <div class="link"><a>
               <span class="ti-settings"></span>
               <span style="margin-left: 12px">Giao Diện<i style="top: 3px" class="fa fa-chevron-down"></i></span>
@@ -143,7 +143,7 @@
                 </a>
               </li>
             </ul>
-          </li>
+          </li> -->
         </ul>
         
       </div>
@@ -164,6 +164,7 @@
           <a style="background-image: url({{url('adminavatar')}}/{{auth()->guard('admin')->user()->avatar}});" href="{{route('suaprofile',['profile'=>auth()->guard('admin')->user()->id])}}">
           </a>
         </div>
+       
       </header>
       <main style="margin-top: 30px;padding-left:20px">
         @yield('content')

@@ -13,12 +13,15 @@
 <script >
   $(document).ready(function(){
     $('#sortpro').change(function () {
+        var ramvalue=get_ram('.ramvalue');
+   var capavalue=get_dungluong('.capavalue');
+        var sortbranch=$("#sortbranch option:selected").val(); 
    var sort=$(this).val();
    
     $.ajax({
 method:"get",
 dataType: "html",
-data:{sort:sort},
+data:{capavalue:capavalue,ramvalue:ramvalue,sort:sort,sortbranch:sortbranch},
 success:function(data){
     $('.ajaxupdate').html(data);
 }
@@ -26,6 +29,71 @@ success:function(data){
 
  
 }); 
+
+//sort theo branch
+$('#sortbranch').change(function () {
+   var sortbranch=$(this).val();
+   var sort=$("#sortpro option:selected").text(); 
+   var ramvalue=get_ram('.ramvalue');
+   var capavalue=get_dungluong('.capavalue');
+    $.ajax({
+method:"get",
+dataType: "html",
+data:{capavalue:capavalue,ramvalue:ramvalue,sort:sort,sortbranch:sortbranch},
+success:function(data){
+    $('.ajaxupdate').html(data);
+}
+    });
+
+ 
+}); 
+$('.ramvalue').click(function () {
+    var sort=$("#sortpro option:selected").text(); 
+    var sortbranch=$("#sortbranch option:selected").text(); 
+    var url=$('#url').val();
+   var ramvalue=get_ram(this);
+   $.ajax({
+url:url,
+method:"get",
+dataType: "html",
+data:{ramvalue:ramvalue,sort:sort,url:url},
+success:function(data){
+    $(' .ajaxupdate').html(data);
+}
+    });
+});
+function get_ram(class_name){
+    var filter=[];
+    $(".ramvalue:checked").each(function(){
+filter.push($(this).val());
+    });
+    return filter;
+}
+$('.capavalue').click(function () {
+    var sort=$("#sortpro option:selected").text(); 
+     var sortbranch=$("#sortbranch option:selected").text(); 
+    var url=$('#url').val();
+   var capavalue=get_dungluong(this);
+   $.ajax({
+url:url,
+method:"get",
+dataType: "html",
+data:{capavalue:capavalue,sort:sort,url:url},
+success:function(data){
+    $('.ajaxupdate').html(data);
+}
+    });
+});
+function get_dungluong(class_name){
+    var filter=[];
+    $(".capavalue:checked").each(function(){
+filter.push($(this).val());
+    });
+    return filter;
+}
+
+
+
 
 });
 </script>
@@ -107,6 +175,7 @@ $.ajax({
                                 </a>
                             </div>
                             <!-- Li's Banner Area End Here -->
+                                
                             <!-- shop-top-bar start -->
                             <div class="shop-top-bar mt-30">
                                 <div class="shop-bar-inner">
@@ -118,10 +187,32 @@ $.ajax({
                                         </ul>
                                         <!-- shop-item-filter-list end -->
                                     </div>
-                                    <div class="toolbar-amount">
-                                    <span>  {!!$productshow->links('giaodien/partials.paginate_top')!!}</span>
-                                    </div>
+                                    
                                 </div>
+                                  <!-- product-select-box start -->
+                                
+                               <div class="product-select-box">
+                                    <div class="product-short">
+                                    
+                                       <p>Hãng Sản Xuất:</p>
+                                       <form id="softproform">
+                                       <select class="nice-select" name="sortbranch" id="sortbranch">
+                                       <option value="">Chọn Hãng</option>
+                                       @foreach($softbranch as $sb)
+                                       <option value="{{$sb->id}}">{{$sb->branch_name}}</option>
+                                       @endforeach
+                                        </select>
+                                       
+                                    </div>
+                                    
+                                    </form>
+                                   
+                                </div>
+                               
+                                
+                                <!-- product-select-box end -->
+
+
                                <!-- product-select-box start -->
                                 
                                <div class="product-select-box">
@@ -150,6 +241,50 @@ $.ajax({
                                 
                             </div>
                             <!-- shop-top-bar end -->
+                             <!-- shop-top-bar start -->
+                             <div class="shop-top-bar mt-30">
+                                <div class="shop-bar-inner">
+                                <!-- filter-sub-area start -->
+                                <div class="filter-sub-area pt-sm-10 pt-xs-10">
+                                    <h5 style="color:#1256A1;" class="filter-sub-titel">Ram</h5>
+                                    <div class="categori-checkbox">
+                                        <form action="#">
+                                            <ul>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="2" name="product-categori"><a href="#">2 GB</a></li>
+                                                <li  style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="3" name="product-categori"><a href="#"> 3 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="4" name="product-categori"><a href="#">4 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="6" name="product-categori"><a href="#"> 6 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="8" name="product-categori"><a href="#">8 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox"class="ramvalue" value="12" name="product-categori"><a href="#"> 12 GB</a></li>
+                                                
+                                            </ul>
+                                            
+                                        </form>
+                                    </div>
+                                 </div>
+                                <!-- filter-sub-area end -->
+                                 <!-- filter-sub-area start -->
+                                 <div style="margin-left:200px;" class="filter-sub-area pt-sm-10 pt-xs-10">
+                                    <h5 style="color:#1256A1;" class="filter-sub-titel">Dung Lượng</h5>
+                                    <div class="size-checkbox">
+                                        <form action="#">
+                                            <ul>
+                                                <li style="display:inline-block;margin-right:20px;"><input  type="checkbox" class="capavalue" value="8" name="product-size"><a href="#">8 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="16" name="product-size"><a href="#">16 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="32" name="product-size"><a href="#">32 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="64" name="product-size"><a href="#">64 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="128" name="product-size"><a href="#">128 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="256" name="product-size"><a href="#">256 GB</a></li>
+                                                <li style="display:inline-block;margin-right:20px;"><input type="checkbox" class="capavalue" value="512" name="product-size"><a href="#">512 GB</a></li>
+                                                
+                                            </ul>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+                             </div>
+                            <!-- shop-top-bar end -->
+                            @if(count($productshow))
                             <!-- shop-products-wrapper start -->
                             <div class="shop-products-wrapper ajaxupdate">
                                 <div class="tab-content">
@@ -262,7 +397,7 @@ $.ajax({
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                                 </div>
-                                                 <!-- Begin Quick View | Modal Area -->
+                        <!-- Begin Quick View | Modal Area -->
             <div class="modal fade modal-wrapper" id="xemnhanh-{{$value->id}}" >
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -294,7 +429,7 @@ $.ajax({
                                     <div class="col-lg-7 col-md-6 col-sm-6">
                                         <div class="product-details-view-content pt-60">
                                             <div class="product-info">
-                                                <h2>{{$value->model_name}} </h2>
+                                                <h2 style="font-size:25px;">{{$value->model_name}} </h2>
                                             <div class="rating-box pt-20">
                                                     <ul class="rating rating-with-review-item">
                                                     @for($i=1;$i<=$value->total_rated;$i++)
@@ -317,8 +452,7 @@ $.ajax({
                                            </form>
                                                 <form action="{{route('add_cart',['id'=>$value->id])}}" class="cart-quantity" method="POST" >
                                         @csrf
-                                        
-                                                <div class="price-box pt-20" >
+                            <div class="price-box pt-20" >
                                                 @php $exsale=$value->getpro->first()->sale*$value->getpro->first()->price/100; @endphp
                                                                 <span class="new-price new-price-2" id="price1-{{$value->id}}">{{number_format($value->getpro->first()->price-$exsale)}} <u>đ</u>
                                                                 <input type="hidden" value=" <?php echo $value->getpro->first()->id;?>" name="productid"/>
@@ -331,12 +465,7 @@ $.ajax({
                                                             @endif
                                                 </div>
                                                 
-                                                <div class="product-desc">
-                                                    <p>
-                                                        <span>{{$value->description}}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                                
                                                 <div class="product-variants">
                                                     <div class="produt-variants-size">
                                                     <label>Chọn Mẫu Khác Của {{$value->model_name}} </label>
@@ -508,6 +637,32 @@ $.ajax({
                                     </div>
                                 </div>
                                 <!-- shop-products-wrapper end -->
+                                @else
+ <!-- Error 404 Area Start -->
+ <div class="error404-area pt-30 pb-60">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="error-wrapper text-center ptb-50 pt-xs-20">
+                                <div class="error-text">
+                                   <h2>Chưa Có Sản Phẩm</h2>
+                                    <p>Shop sẽ cập nhật sản phẩm trong thời gian sớm nhất có thể </p>
+                                </div>
+                                <div class="search-error">
+                                <img src=" {{asset('images/menu/logo/nopro.jpg')}}" alt="" style="width:100px;" >
+                                </div>
+                                <div class="error-button" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Error 404 Area End -->
+
+
+                                
+                                @endif
                         </div>
                     </div>
                 </div>

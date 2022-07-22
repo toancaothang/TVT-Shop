@@ -32,31 +32,22 @@
                                             @foreach ($prowishshow as $ps)
                                             <tr>
                                                
-                                                <td class="li-product-thumbnail"><a href="#"><img src="{{url('website/product')}}/{{$ps->image}}" alt="" style="width:100px;height:100px;"></a></td>
-                                                <td class="li-product-name"><a href="#"> </a> {{$ps->model_name}}  {{$ps->capacity}} GB</td>
+                                                <td class="li-product-thumbnail"><a href="{{route('chitiet_sanpham',['cateid'=>$ps->category_id,'id'=>$ps->mid])}}"><img src="{{url('website/product')}}/{{$ps->image}}" alt="" style="width:100px;height:100px;"></a></td>
+                                                <td class="li-product-name"><a href="{{route('chitiet_sanpham',['cateid'=>$ps->category_id,'id'=>$ps->mid])}}"> </a> {{$ps->model_name}}  {{$ps->capacity}} GB</td>
                                                 @php $exsale=$ps->sale*$ps->price/100;
                                                 $trueprice=$ps->price-$exsale;
                                                  @endphp
                                                 <td class="li-product-price">
                                                     
-                                    @php
-                                    $dahethang=0;
-                                    @endphp
-                                    @foreach($hethang as $hh)
-                                    @if($hh->mid==$ps->mid)
-                                    @php 
-                                    $dahethang+=$hh->stock;
-                                    @endphp
-                                    @endif
-                                    @endforeach
-                                    @if($dahethang>0)
+                                    
+                                    @if($ps->stock>0)
                                                     <span class="amount"> {{number_format($trueprice)}} <u> đ</u></span></td>
                                                     <td class="li-product-stock-status"><span class="in-stock">Còn Hàng</span></td>
                                                     @else
                                                     <span class="amount" style="color:red"> Hết Hàng</span></td>
                                                 <td class="li-product-stock-status"><span class="in-stock" style="color:red;">Hết Hàng</span></td>
                                                 @endif
-                                                <td class="li-product-add-cart"> @if($dahethang>0)<a href="{{route('wishto_cart',['id'=>$ps->wid])}}">Thêm Vào Giỏ Hàng</a> @else<a href="#" style="">Đã Hết Hàng</a>@endif  </td>
+                                                <td class="li-product-add-cart"> @if($ps->stock>0)<a href="{{route('wishto_cart',['id'=>$ps->wid])}}">Thêm Vào Giỏ Hàng</a> @else<a href="#" style="">Đã Hết Hàng</a>@endif  </td>
                                                 <td class="li-product-remove"><a href="{{route('delete_wish',['id'=>$ps->wid])}}"><i class="fa fa-times"></i></a></td>
                                                 
                                             </tr>

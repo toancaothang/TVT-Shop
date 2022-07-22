@@ -23,8 +23,8 @@
             </form>
             <div class="activity-grid" >
                 <div class="activity-card" >
-                  <div class="table-responsive">
-                    <table class="table-sortable" id="example" style="margin-bottom: 20px">
+                  <div class="table-responsive;"style="width:1000px!important;">
+                    <table class="table-sortable" id="example" style="margin-bottom: 20px;">
                         <thead>
                           <tr>
                             <th>Tên sản phẩm</th>
@@ -43,7 +43,7 @@
                               <td>{{$a->branch_name}}</td>
                               <td>0{{$a->phone_number}}</td>
                               <td>{{$a->deliver_address}}</td>
-                              <td >{{$a->total}}đ</td>
+                              <td>{{number_format($a->total)}}đ</td>
                               <td>
                                 @if($a->status == 0)
                             <span style="color:#d35400;">Đang xác nhận</span>

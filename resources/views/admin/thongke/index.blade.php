@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.2.510/styles/kendo.default-ocean-blue.min.css" />
     <script src="https://kendo.cdn.telerik.com/2022.2.510/js/jquery.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2022.2.510/js/kendo.all.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.2.621/js/jszip.min.js"></script>
     <h4 class="dash-title">Thống kê</h4>
     <div class="dash-cards" >
         <section class="recent" style="margin-top: 0px">
@@ -52,37 +53,20 @@
             <h4 class="dash-title">Bảng thống kê doanh thu bán hàng</h4>
             <div class="activity-grid">
                     <div class="activity-card" style="width:1050px">
+                        <div style="margin-bottom: 10px; float:right">
+                            <select id="ChonThongKe" style="margin-left:30px;width:150px;width:200px">
+                                    <option value="0">Bán chạy nhất</option> 
+                                    <option value="1">Doanh thu cao nhất</option> 
+                            </select>
+                        </div>
                         <div class="table-responsive">
-                            <table>
-                                <thead>
-                                  <tr>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Số lượng trong kho</th>
-                                    <th>Đã bán</th>
-                                    <th>Doanh thu sản phẩm</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  @foreach ($BangThongKe as $a)
-                                  <tr>
-                                    {{-- <td><img style="width:50px;height:50px" src="{!! url('backend/img/'.$a->anhdaidien.'') !!}"></td> --}}
-                                    <td>{{ $a->tensanpham }}</td>
-                                    <td>{{ $a->tonkho }}</td>
-                                    <td>{{ $a->soluong }}</td>
-                                    <td>{{ $a->tongtien }}</td>
-                                  </tr> 
-                                  @endforeach
-                                    
-                                 
-                                </tbody>
-                              </table>
-                          </div>
+                              <div id="ThongkeSanPham"></div>
+                           </div>
                         </div>
                     </div>
                 </div>
             </section>
     </div>
-    
     <script>
         var dataThang = [];
         var dataNgay = [];
@@ -95,6 +79,9 @@
         $("#TheoNam").kendoDropDownList({
         });
         $("#TheoNam1").kendoDropDownList({
+        });
+        $("#ChonThongKe").kendoDropDownList({
+            select: chonphuongthuc,
         });
         $("#chart").kendoChart({
             legend: {
@@ -128,7 +115,7 @@
             tooltip: {
                 visible: true,
                 format: "{0}%",
-                template: "#= value #"
+                template: '#= kendo.toString(value,"n0")# đ'
             }
         });
         $("#chart1").kendoChart({
@@ -163,7 +150,7 @@
             tooltip: {
                 visible: true,
                 format: "{0}%",
-                template: "#= value #"
+                template: '#= kendo.toString(value,"n0")# đ'
             }
         });
     }
@@ -181,21 +168,22 @@
                 dataType: 'json',
                 success: function(data){
                     var dataThang = [];
-                    var dataNgay = [];
-                    var b=[];
-                    var ngay =[];
-                    var theongay=[];
-                    for(i=1;i<=30;i++){
-                        theongay.push({ngay:i,total: 0});
-                        ngay.push(i);
+                var dataNgay = [];
+                var b=[];
+                var ngay =[];
+                var theongay=[];
+                for(i=1;i<=12;i++){
+                        b.push({thang: i,total: 0});
                     }
-                    for(i=0;i<theongay.length;i++){
+                for(i=1;i<=30;i++){
+                    theongay.push({ngay:i,total: 0});
+                    ngay.push(i);
+                }
+                for(i=0;i<theongay.length;i++){
                     for(j=0;j<data.length;j++){
                         if(theongay[i].ngay == data[j].ngay)
                         {
                             theongay[i].total = data[j].total;
-                        }else{
-                            theongay[i].total =0;
                         }
                     }
                     dataNgay.push({Value: parseInt(theongay[i].total)});
@@ -244,6 +232,14 @@
                 console.log(error)
             }
         });
+    }
+    function chonphuongthuc(e) {
+        var dataItem = e.dataItem;
+        if(dataItem.value == 1){
+            doanhthucaonhat();
+        }else{
+            banchaynhat();
+        }
     }
     function GoiDuLieu(){
         $.ajax({
@@ -297,8 +293,67 @@
                 console.log(error)
             }
         });
+        $.ajax({
+            url:'{{route('LoadBangDanhSach')}}',
+            type: "GET",
+            dataType: "json",
+            success:function(data){
+                var dataSource = new kendo.data.DataSource({
+                data: data,
+                pageSize: 5,
+                });
+                var grid = $("#ThongkeSanPham").data("kendoGrid");
+                grid.setDataSource(dataSource);
+                document.getElementsByClassName('k-button-text')[0].innerHTML = 'Xuất file excel';
+                
+            },
+            error:function(error){
+                console.log(error)
+            }
+        });
+    }
+    function banchaynhat(){
+        $.ajax({
+            url:'{{route('LoadBangDanhSach')}}',
+            type: "GET",
+            dataType: "json",
+            success:function(data){
+                var dataSource = new kendo.data.DataSource({
+                data: data,
+                pageSize: 5,
+                });
+                var grid = $("#ThongkeSanPham").data("kendoGrid");
+                grid.setDataSource(dataSource);
+                document.getElementsByClassName('k-button-text')[0].innerHTML = 'Xuất file excel';
+                
+            },
+            error:function(error){
+                console.log(error)
+            }
+        });
+    }
+    function doanhthucaonhat(){
+        $.ajax({
+            url:'{{route('Doanhthucaonhat')}}',
+            type: "GET",
+            dataType: "json",
+            success:function(data){
+                var dataSource = new kendo.data.DataSource({
+                data: data,
+                pageSize: 5,
+                });
+                var grid = $("#ThongkeSanPham").data("kendoGrid");
+                grid.setDataSource(dataSource);
+                document.getElementsByClassName('k-button-text')[0].innerHTML = 'Xuất file excel';
+                
+            },
+            error:function(error){
+                console.log(error)
+            }
+        });
     }
     $(document).ready(function(){
+        
         $("#tabstrip").kendoTabStrip({
             animation:  {
                 open: {
@@ -315,8 +370,53 @@
         }
         GoiDuLieu();
         From();
-
+        LoadDanhSach();
     })
+    function LoadDanhSach(){
+        $('#ThongkeSanPham').kendoGrid({
+            dataSource:[],
+            sortable: true,
+            pageable: true,
+            groupable: true,
+            height: 350,
+            toolbar: ["excel"],
+            pageable: {
+                messages: {
+                    display: "Dữ liệu báo cáo không tính các đơn hàng có trạng thái huỷ"
+                }
+            },
+            groupable: {
+                messages: {
+                    empty: "Kéo tiêu đề cột và thả vào đây để nhóm theo cột đó"
+                }
+            },
+            columns: [{
+                title: "STT",
+                template: "#= ++record #",
+                width: 60
+            },{
+                template: '<div class="customer-photo"' +
+                'style="background-image: url(\'{!! url("website/product/#:data.image#") !!}\')"></div>' +
+                '<div class="customer-name">#: model_name #</div>',
+                field: "model_name",
+                title: "Tên sản phẩm",
+                width: 340
+            }, {
+                field: "branch_name",
+                title: "Danh mục"
+            }, {
+                field: "soluong",
+                title: "Đã bán"
+            }, {
+                template:'<span>#= kendo.toString(tongtien, "n0")# đ</span>',
+                field: "tongtien",
+                title: "Tổng tiền"
+            }],
+            dataBinding: function() {
+                record = (this.dataSource.page() -1) * this.dataSource.pageSize();
+            },
+        });
+    }
     function LoadSo(){
         var dataThang = [];
         var dataNgay = [];

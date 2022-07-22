@@ -41,9 +41,9 @@
                               <td>{{$a->receiver_fullname}}</td>
                               <td>0{{$a->phone_number}}</td>
                               <td>{{$a->deliver_address}}</td>
-                              <td> đ <?php
+                              <td> <?php
                                 echo number_format($a->total,'0','.','.')
-                                ?>
+                                ?> đ
                                 </td>
                               <td>
                                 @if($a->status == 0)

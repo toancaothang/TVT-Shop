@@ -1,3 +1,4 @@
+
 <head> 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="/resources/demos/style.css">
@@ -44,7 +45,9 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
    <script src="{{asset('js/vendor/modernizr-2.8.3.min.js')}}"></script>
+
 </head>
+
  <!-- shop-products-wrapper start -->
  <div class="shop-products-wrapper ajaxupdate">
                                 <div class="tab-content">
@@ -157,7 +160,7 @@
                                                     </div>
                                                         <!-- single-product-wrap end -->
                                                 </div>
-                                                 <!-- Begin Quick View | Modal Area -->
+                                                   <!-- Begin Quick View | Modal Area -->
             <div class="modal fade modal-wrapper" id="xemnhanh-{{$value->id}}" >
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -189,7 +192,7 @@
                                     <div class="col-lg-7 col-md-6 col-sm-6">
                                         <div class="product-details-view-content pt-60">
                                             <div class="product-info">
-                                                <h2>{{$value->model_name}} </h2>
+                                                <h2 style="font-size:25px;">{{$value->model_name}} </h2>
                                             <div class="rating-box pt-20">
                                                     <ul class="rating rating-with-review-item">
                                                     @for($i=1;$i<=$value->total_rated;$i++)
@@ -212,8 +215,7 @@
                                            </form>
                                                 <form action="{{route('add_cart',['id'=>$value->id])}}" class="cart-quantity" method="POST" >
                                         @csrf
-                                        
-                                                <div class="price-box pt-20" >
+                            <div class="price-box pt-20" >
                                                 @php $exsale=$value->getpro->first()->sale*$value->getpro->first()->price/100; @endphp
                                                                 <span class="new-price new-price-2" id="price1-{{$value->id}}">{{number_format($value->getpro->first()->price-$exsale)}} <u>đ</u>
                                                                 <input type="hidden" value=" <?php echo $value->getpro->first()->id;?>" name="productid"/>
@@ -226,12 +228,7 @@
                                                             @endif
                                                 </div>
                                                 
-                                                <div class="product-desc">
-                                                    <p>
-                                                        <span>{{$value->description}}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                                
                                                 <div class="product-variants">
                                                     <div class="produt-variants-size">
                                                     <label>Chọn Mẫu Khác Của {{$value->model_name}} </label>

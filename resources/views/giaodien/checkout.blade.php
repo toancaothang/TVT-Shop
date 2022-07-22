@@ -108,14 +108,16 @@
                                         </thead>
                                         <tbody>
                                             @foreach($takecart as $tc)
+                                            @if($tc->stock>0)
                                             <tr class="cart_item">
                                               <td class="cart-product-name">{{$tc->model_name}} {{$tc->capacity}}GB<strong class="product-quantity"> × {{$tc->pro_quantity}}</strong></td>
                                               @php $exsale=$tc->sale*$tc->price/100;
                                                 $trueprice=$tc->price-$exsale;
                                                  @endphp
                                               @php $subtotal=$trueprice * $tc->pro_quantity; @endphp
-                                              <td class="cart-product-total"><span class="amount"> {{$subtotal}}  <u>đ</u></span></td>  
+                                              <td class="cart-product-total"><span class="amount"> {{number_format($subtotal)}}  <u>đ</u></span></td>  
                                             </tr>
+                                            @endif
                                             @endforeach
                                        </tbody>
                                         <tfoot>

@@ -54,7 +54,7 @@ class AnhmausanphamController extends Controller
         $dsanhmausanpham = DB::table('model_image')
         ->select(DB::raw("model_image.id as id,model_name, file_name"))
         ->join('product_model', 'product_model.id', '=', 'model_image.model_id')
-        ->where('model_name', 'LIKE', "%$model_name%")->where('status','=','1')->get();  
+        ->where('model_name', 'LIKE', "%$model_name%")->get();  
         return view('admin.anhmodelsanpham.index',compact('dsanhmausanpham'));
     }
 }

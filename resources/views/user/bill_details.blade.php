@@ -125,16 +125,7 @@ hr {
 <div class="page-content container">
     <div class="page-header text-blue-d2">
         <div class="page-tools">
-            <div class="action-buttons">
-                <a class="btn bg-white btn-light mx-1px text-95" href="#" data-title="Print">
-                    <i class="mr-1 fa fa-print text-primary-m1 text-120 w-2"></i>
-                    In Hóa Đơn
-                </a>
-                <a class="btn bg-white btn-light mx-1px text-95" href="#" data-title="PDF">
-                    <i class="mr-1 fa fa-file-pdf-o text-danger-m1 text-120 w-2"></i>
-                    Xuất File
-                </a>
-            </div>
+           
         </div>
     </div>
 
@@ -148,10 +139,10 @@ hr {
                         </div>
                         <div class="text-grey-m2">
                             <div class="my-1">
-                            {{$billinfo->deliver_address}}
+                            Địa Chỉ: {{$billinfo->deliver_address}}
                             </div>
                             
-                            <div class="my-1"><i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600">{{$billinfo->phone_number}}</b></div>
+                            <div class="my-1"><i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600">0 {{$billinfo->phone_number}}</b></div>
                         </div>
                     </div>
                     <!-- /.col -->
@@ -163,7 +154,7 @@ hr {
                                 Hóa Đơn
                             </div>
 
-                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Mã Hóa Đơn:</span> {{$billinfo->id}}</div>
+                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Mã Hóa Đơn:</span>A{{$billinfo->id}}</div>
 
                             <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Ngày Đặt:</span> {{date_format($billinfo->created_at,"d/m/y H:i:s")}}</div>
                           @if($billinfo->status==0)
@@ -193,8 +184,8 @@ hr {
                 @foreach($billdetails as $bt)
                     <div class="text-95 text-secondary-d3">
                         <div class="row mb-2 mb-sm-0 py-25">
-                         <div class="d-none d-sm-block col-1" style="flex: 28 21 12.333333%;max-width:142px;"><img src="{{url('website/product')}}/{{$bt->image}}" alt="" style="width:50px;"></div>
-                            <div class="col-9 col-sm-5" style="max-width: 37.666667%;"> {{$bt->model_name}}{{$bt->capacity}}GB</div>
+                         <div class="d-none d-sm-block col-1" style="flex: 28 21 12.333333%;max-width:142px;"><a href="{{route('chitiet_sanpham',['cateid'=>$bt->category_id,'id'=>$bt->pid])}}"><img src="{{url('website/product')}}/{{$bt->image}}" alt="" style="width:50px;"></a></div>
+                            <div class="col-9 col-sm-5" style="max-width: 37.666667%;"><a href="{{route('chitiet_sanpham',['cateid'=>$bt->category_id,'id'=>$bt->pid])}}"> {{$bt->model_name}} {{$bt->capacity}}GB</a></div>
                             <div class="d-none d-sm-block col-2">{{$bt->quantity}}</div>
                             <div class="d-none d-sm-block col-2 text-95"> {{number_format($bt->unit_price)}} <u>đ </u></div>
                             @php $tongsp=$bt->unit_price*$bt->quantity; @endphp

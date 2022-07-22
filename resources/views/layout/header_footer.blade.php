@@ -93,14 +93,19 @@
                                         </li>
                                             @endif
                                         <li>
+                                       
                                             <div class="ht-setting-trigger"><span>Cài Đặt</span></div>
                                             <div class="setting ht-setting">
                                                 <ul class="ht-setting-list">
+                                                @if(Auth::check()) 
+                                                  <li><a style="width: 120px;" href="{{route('hienthi_dangky')}}" style="color:black;">Chuyển Tài Khoản</a></li>
+                                                  @else
                                                   <li><a href="{{route('hienthi_dangky')}}" style="color:black;">Đăng Nhập</a></li>
-                                                    
+                                                  @endif
                                                 </ul>
             
                                             </div>
+                                           
                                         </li>
                                   
                                         <!-- Setting Area End Here -->
@@ -146,7 +151,7 @@
                             <!-- Begin Header Middle Right Area -->
                             <div class="col-lg-9 pl-0 ml-sm-15 ml-xs-15">
                                 <!-- Begin Header Middle Searchbox Area -->
-                                <form action="{{route('search_product')}}" class="hm-searchbox" method="POST">
+                                <form action="{{route('search_product')}}" class="hm-searchbox" method="GET">
                                 @csrf
                                     <select class="nice-select select-search-category" name="searchdm">
                                   
@@ -213,7 +218,11 @@
                                                             @php $exsale=$qc->sale*$qc->price/100;
                                                 $trueprice=$qc->price-$exsale;
                                                  @endphp
+                                                            @if($qc->stock>0)
                                                             <span>{{number_format($trueprice)}} <u> đ</u> x {{$qc->pro_quantity}}</span>
+                                                            @else
+                                                            <span style="color:red;">Hết Hàng x {{$qc->pro_quantity}}</span>
+                                                            @endif
                                                         </div>
                                                     </li>
                                                     @endforeach
@@ -224,9 +233,14 @@
                                                     <a href="{{route('hienthi_cart')}}" class="li-button li-button-dark li-button-fullwidth li-button-sm">
                                                         <span>Xem Giỏ Hàng</span>
                                                     </a>
-                                                    <a href="" class="li-button li-button-fullwidth li-button-sm">
+                                                    @php 
+                                        $cartcountqc=(App\Models\Cart::join('product_model','cart.pro_model_id','=','product_model.id')->join('product','cart.product_id','=','product.id')->where('user_id',Auth::user()->id)->where('product_model.status',1)->where('product.status',1)->where('product.stock','>',0)->sum('pro_quantity'));
+                                        @endphp
+                                        @if($cartcountqc)
+                                                    <a href="{{route('checkout_qc')}}" class="li-button li-button-dark li-button-fullwidth li-button-sm">
                                                         <span>Thanh Toán</span>
                                                     </a>
+                                                    @endif
                                                 </div>
                                             </div>
                                           
@@ -272,8 +286,8 @@
                                            <li class="" style="margin-right:9px;"><a href="{{route('hienthi_baiviet')}}">Công Nghệ 24h</a>
                                                
                                            </li>
-                                           <li><a href="about-us.html">Về Chúng Tôi</a></li>
-                                           <li><a href="contact.html">Thông Tin Liên Hệ</a></li>
+                                           <li><a href="{{route('about_us')}}">Về Chúng Tôi</a></li>
+                                           <li><a href="{{route('con_tact')}}">Thông Tin Liên Hệ</a></li>
                                           
                                        </ul>
                                    </nav>
@@ -296,7 +310,7 @@
                 <!-- Mobile Menu Area End Here -->
             </header>
             <!-- Header Area End Here -->
-    @yield('main')
+             @yield('main')
 
          
             <!-- Begin Footer Area -->
@@ -490,7 +504,20 @@ max-width: 26.666667%;">
         <script src="{{asset('js/jquery.nice-select.min.js')}}"></script>
         <script src="{{asset('js/scrollUp.min.js')}}"></script>
         <script src="{{asset('js/main.js')}}"></script>
-      
+      <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/62d8429654f06e12d88a7e69/1g8ec871m';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
        <script>
 $('.input-search-result').hide();
 $('.input-search-ajax').keyup(function(){

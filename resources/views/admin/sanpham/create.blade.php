@@ -36,7 +36,11 @@
                         </div>
                         <div class="col-md-6 form-group mb-3">
                             <label for="" class="col-form-label">Màu *</label>
-                            <input type="text" class="form-control" name="color" id="color" placeholder="Nhập màu" required>
+                            <select class="form-control" name="color" id="color">
+                                <option value="Đen">Đen</option>
+                                <option value="Trắng">Trắng</option>
+                                <option value="Xanh">Xanh</option>
+                              </select>
                         </div>
                     </div>
                     <div class="row">

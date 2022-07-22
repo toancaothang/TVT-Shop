@@ -33,7 +33,10 @@
                             <label for="" class="col-form-label">Số điện thoại khách hàng</label>
                             <input type="text" class="form-control" value="0{{$thongtin->phone_number}}" readonly>
                         </div>
-                        <div class="col-md-6 form-group mb-3">
+                        @if($thongtin->status == 2||$thongtin->status == 3)
+                       
+                    @else
+                    <div class="col-md-6 form-group mb-3">
                             <label for="" class="col-form-label">Tình trạng</label>
                             <select class="form-control" name="status" id="status">
                                 @if ($thongtin->status == 0){
@@ -59,10 +62,16 @@
                                 @endif 
                               </select>
                         </div>
+                        @endif
                     </div>
+                   
                     <div class="row">
                     <div class="col-md-12 form-group">
+                    @if($thongtin->status == 2||$thongtin->status == 3)
+                    <a href="http://127.0.0.1:8000/admin/hoadon/index"> Trở lại</a>
+                       @else
                         <input style="font-size:20px;" type="submit" value="Lưu" class="button type2">
+                        @endif
                         <span class="submitting"></span>
                     </div>
                     </div>
@@ -91,8 +100,8 @@
                                 @endforeach  
                               </td>
                               <td>{{$a->quantity}}</td>
-                              <td>{{$a->unit_price}}</td>
-                              <td>{{$a->unit_price * $a->quantity}}</td>
+                              <td>{{number_format($a->unit_price)}} đ</td>
+                              <td>{{number_format($a->unit_price * $a->quantity)}} đ</td>
                             </tr>
                           @endforeach  
                         </tbody>

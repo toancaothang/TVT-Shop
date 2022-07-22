@@ -11,6 +11,7 @@ use App\Models\Coupon;
 use App\Models\HoaDon;
 use App\Models\WishList;
 use App\Models\SanPham;
+use App\Models\NSX;
 use App\Models\Cart;
 use App\Models\TinTuc;
 use Illuminate\Http\Request;
@@ -23,9 +24,11 @@ class GiaoDienController extends Controller
 {
 // hien thi du lieu ra trang chu
 public function httrangchu(){
-    $coupon=Coupon::where('coupon_condition',0)->get();
-$newpro=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('status',1)->orderBy('updated_at','DESC')->get()->take(10);
-$sale=ModelSP::join('product','product_model.id','=','product.model_id')->where('product_model.status',1)->where('product.status',1)->where('sale','>',0)->get(['product_model.id as mid',
+ $coupon=Coupon::where('coupon_condition',0)->get();
+$newpro=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+    $q->where('stock','>', 0);
+})->with('getimage')->with('getcomment')->where('status',1)->orderBy('updated_at','DESC')->get()->take(10);
+$sale=ModelSP::join('product','product_model.id','=','product.model_id')->where('product_model.status',1)->where('product.status',1)->where('sale','>',0)->where('stock','>',0)->get(['product_model.id as mid',
     'product.id',
     'product_model.model_name',
     'product_model.category_id',
@@ -33,12 +36,17 @@ $sale=ModelSP::join('product','product_model.id','=','product.model_id')->where(
     'product.price',   
      'product.capacity','product.sale',
      'product_model.total_rated',
-     'product.stock',
 ]);
 
-$samsung=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('category_id',1)->where('status',1)->get()->take(10);
-$apple=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('category_id',2)->where('status',1)->get()->take(10);
-$toprate=ModelSP::with('getpro')->with('getimage')->where('status',1)->orderBy('total_rated','DESC')->get()->take(20);
+$samsung=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+    $q->where('stock','>', 0);
+})->with('getimage')->with('getcomment')->where('category_id',1)->where('status',1)->get()->take(10);
+$apple=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+    $q->where('stock','>', 0);
+})->with('getimage')->with('getcomment')->where('category_id',2)->where('status',1)->get()->take(10);
+$toprate=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+    $q->where('stock','>', 0);
+})->with('getimage')->where('status',1)->orderBy('total_rated','DESC')->get()->take(15);
 
     return view('welcome',compact('newpro','samsung','apple','sale','toprate','coupon'));
 }
@@ -59,11 +67,35 @@ $toprate=ModelSP::with('getpro')->with('getimage')->where('status',1)->orderBy('
 
 //tat ca san pham
 public function allproduct(Request $request){
+    $softbranch=NSX::all();
     if($request->ajax()){
         $data=$request->all();
-$productshow=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('status',1);
+        $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+            $q->where('stock','>', 0);
+        })->with('getimage')->with('getcomment')->where('status',1);
+ //neu co filter dung luong
+ if(isset($data['capavalue'])&&!empty($data['capavalue'])){
+    $productshow=ModelSP::with('getimage')->with('getcomment')->where('status',1);
+    $productshow =  ModelSP::query();
+    $productshow =  $productshow->leftJoin('product','product_model.id','=','product.model_id');
+    $productshow =  $productshow->whereIn('product.capacity',$data['capavalue']);
+ 
+}
+
+//neu co filter ram
+if(isset($data['ramvalue'])&&!empty($data['ramvalue'])){
+    $productshow->WhereIn('ram',$data['ramvalue']);
+}
+
+//neu co sort branch
+if(isset($data['sortbranch'])&&!empty($data['sortbranch'])){
+       //echo "<pre>"; print_r($data); die;
+    $productshow->where('branch_id',$data['sortbranch']);
+
+}
+
 // neu co sort
-if(isset($data['sort'])&&!empty($data['sort'])){
+ if(isset($data['sort'])&&!empty($data['sort'])){
     if($data['sort']=="toprate")
     {
         $productshow->orderBy('total_rated','Desc');
@@ -93,44 +125,46 @@ if(isset($data['sort'])&&!empty($data['sort'])){
     $productshow=$productshow->paginate(30);
 }
 else{
-    $productshow=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('status',1)->paginate(30);
+    $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+        $q->where('stock','>', 0);
+    })->with('getimage')->with('getcomment')->where('status',1)->paginate(30);
    
 }
-return view('giaodien/ajaxview.sort_pro_all',compact('productshow'));
+return view('giaodien/ajaxview.sort_pro_all',compact('productshow','softbranch'));
 
         }
+    
         else{
-            $productshow=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('status',1)->paginate(30);
+            $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+                $q->where('stock','>', 0);
+            })->with('getimage')->with('getcomment')->where('status',1)->paginate(30);
         }
-
-   
-return view('giaodien.product_all',compact('productshow'));
+return view('giaodien.product_all',compact('productshow','softbranch'));
 
 }
 
     //xu ly hien thi san pham trong danh muc
 public function hienthidanhmuc(Request $request,$id){
+    
     if($request->ajax()){
         $data=$request->all();
+        $start=$request->start;
+        $end=$request->end;
         $url=$data['url'];
         //echo "<pre>"; print_r($data); die;
         $categoryshow=DanhMuc::where('id',$id)->where('status',1)->first();
- $productshow=ModelSP::with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1);
+        $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+            $q->where('stock','>', 0);
+        })->with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1);
+ //neu co filter dung luong
         if(isset($data['capavalue'])&&!empty($data['capavalue'])){
+            $productshow=ModelSP::with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1);
             $productshow =  ModelSP::query();
             $productshow =  $productshow->where('category_id',$id);
-        $productshow =   $productshow->where('product_model.status',1);
             $productshow =  $productshow->leftJoin('product','product_model.id','=','product.model_id');
             $productshow =  $productshow->whereIn('product.capacity',$data['capavalue']);
          
         }
-       // echo "<pre>"; print_r($data); die;
-//        $categoryshow=DanhMuc::where('id',$id)->first();
-//  $productshow=ModelSP::with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1);
-//neu co filter dung luong
-// if(isset($data['capavalue'])&&!empty($data['capavalue'])){
-//     $productshow->whereIn('capacity',$data['capavalue']);
-// }
 
 //neu co filter ram
 if(isset($data['ramvalue'])&&!empty($data['ramvalue'])){
@@ -168,15 +202,18 @@ if(isset($data['sort'])&&!empty($data['sort'])){
     $productshow=$productshow->paginate(6);
 }
 else{
-    $productshow=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1)->paginate(6);
+    $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+        $q->where('stock','>', 0);
+    })->with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1)->paginate(6);
 }
 return view('giaodien/ajaxview.sort_pro',compact('productshow','categoryshow','id'));
 
         }else{
             $categoryshow=DanhMuc::where('id',$id)->where('status',1)->first();
-            $productshow=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1)->paginate(6);
-            return view('giaodien.category_product',compact('productshow','categoryshow','id'));
-
+            $productshow=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+                $q->where('stock','>', 0);
+            })->with('getimage')->with('getcomment')->where('category_id',$categoryshow->id)->where('status',1)->paginate(6);
+    return view('giaodien.category_product',compact('productshow','categoryshow','id'));
 
         }
 
@@ -193,11 +230,12 @@ public function chitietsanpham($cateid,$id){
         'product_model.id as mid',
         'product.stock',
 ]); 
-
-    $bienthe=SanPham::where('status',1)->where('model_id',$ctmodel->id)->get();
+    $bienthe=SanPham::where('status',1)->where('model_id',$ctmodel->id)->where('stock','>',0)->get();
 $modelimage=AnhSP::where('model_id',$id)->get();
 $samecate=DanhMuc::where('id',$cateid)->where('status',1)->first();
-$samemodel=ModelSP::with('getpro')->with('getimage')->with('getcomment')->where('category_id',$samecate->id)->where('status',1)->get();
+$samemodel=ModelSP::with(['getpro'])->whereHas('getpro',function($q) {
+    $q->where('stock','>', 0);
+})->with('getimage')->with('getcomment')->where('category_id',$samecate->id)->where('status',1)->get();
 $commentshow=BinhLuan::where('model_id',$id)->get();
 $commentcount=BinhLuan::where('model_id',$id)->get();
 $commentsum=BinhLuan::where('model_id',$id)->sum('stars');
@@ -228,13 +266,13 @@ public function hienthiwishlist()
        'product.capacity',
        'product.price',
        'product.sale',
-       'product_model.id as mid'
+       'product_model.id as mid',
+       'product.stock',
+       'product_model.category_id',
+       
 ]);
-$hethang=ModelSP::join('product','product_model.id','=','product.model_id')->where('product_model.status',1)->where('product.status',1)->get([
-    'product_model.id as mid',
-    'product.stock',
-]); 
-return view('giaodien.wishlist',compact('prowishshow','hethang'));
+
+return view('giaodien.wishlist',compact('prowishshow'));
 }
 //dem so luong sp trong wishlist
 public function wishlistcount($id)
@@ -344,6 +382,7 @@ public function hienthicart()
        'product.sale',
        'product_model.id as pid',
        'product_model.category_id'
+       ,'product.stock'
 ]);
 return view('giaodien.cart',compact('procartshow'));
 }
@@ -361,6 +400,7 @@ return view('giaodien.cart',compact('procartshow'));
            'product_model.image',
           'product.capacity',
            'product.price',
+           'product.stock'
     ]);
     
     return view('layout.header_footer',compact('quickcart'));
@@ -377,7 +417,15 @@ public function billdetails($id)
     $billinfo=HoaDon::find($id);
     $billdetails=CTHoaDon::join('bill','bill_details.bill_id','=','bill.id')->join('product_model','bill_details.pro_model_id','=','product_model.id')->join('product','bill_details.product_id','=','product.id')->where('user_id',Auth::user()->id)
     ->where('bill_id',$id)
-    ->get();
+    ->get(['product_model.image',
+    'product_model.id as pid',
+    'product_model.category_id',
+    'product_model.model_name',
+    'product.capacity',
+    'bill_details.quantity',
+    'bill_details.unit_price',
+
+]);
  
 return view('user.bill_details',compact('billdetails','billinfo'));
 }
@@ -403,21 +451,155 @@ public function activedmail(KhachHang $id,$token)
 }
 public function searchhd(Request $req){
     $output="";
-$hoadon=HoaDon::where('id','like','%'.$req->search.'%')->get();
+    if($req->search)
+    {
+$hoadon=HoaDon::where('receiver_fullname','like','%'.$req->search.'%')->where('user_id',Auth::user()->id)->get();
 foreach($hoadon as $hd){
-    $output.=
-    '<tr>
-    <td> '.$hd->id.'</td>
-    <td> '.$hd->receiver_fullname.'</td>
-    <td> '.$hd->deliver_address.'</td>
-    <td> '.$hd->created_at.'</td>
-    <td> '.$hd->status.'</td>
-    <td> '.$hd->total.'</td>
-    </tr>';
-
+    if($hd->status==0){
+        $output.=
+        '<tr>
+        <td> '.$hd->id.'</td>
+        <td> '.$hd->receiver_fullname.'</td>
+        <td> '.$hd->deliver_address.'</td>
+        <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+        <td>'.'
+        <span class="status text-success" style="color:red!important;">&bull;</span> Đang xác nhận đơn
+      '.' </td>
+        <td> '.number_format($hd->total).' <u>đ</u></td>
+        <td>'.'
+        <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+        '.'</td>
+        </tr>'; 
+        }
+        else if($hd->status==1){
+            $output.=
+            '<tr>
+            <td> '.$hd->id.'</td>
+            <td> '.$hd->receiver_fullname.'</td>
+            <td> '.$hd->deliver_address.'</td>
+            <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+            <td>'.'
+            <span class="status text-success" style="color:green!important;">&bull;</span>  Đã xác nhận Đơn, đang trong quá trình vận chuyển
+          '.' </td>
+            <td> '.number_format($hd->total).' <u>đ</u></td>
+            <td>'.'
+            <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+            '.'</td>
+            </tr>'; 
+            }
+            else if($hd->status==2){
+                $output.=
+                '<tr>
+                <td> '.$hd->id.'</td>
+                <td> '.$hd->receiver_fullname.'</td>
+                <td> '.$hd->deliver_address.'</td>
+                <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+                <td>'.'
+                <span class="status text-success" style="color:yellow!important;">&bull;</span> Đã giao hàng đến địa chỉ
+              '.' </td>
+                <td> '.number_format($hd->total).' <u>đ</u></td>
+                <td>'.'
+                <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+                '.'</td>
+                </tr>'; 
+                }
+                else{
+                    $output.=
+                '<tr>
+                <td> '.$hd->id.'</td>
+                <td> '.$hd->receiver_fullname.'</td>
+                <td> '.$hd->deliver_address.'</td>
+                <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+                <td>'.'
+                <span class="status text-success" style="color:gray!important;">&bull;</span>  Đơn đã hủy
+              '.' </td>
+                <td> '.number_format($hd->total).' <u>đ</u></td>
+                <td>'.'
+                <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+                '.'</td>
+                </tr>'; 
+                }
 }
 return response($output);
+    }
+    elseif($req->statusvalue)
+    {
+    $hoadonst=HoaDon::where('status',$req->statusvalue)->where('user_id',Auth::user()->id)->get();
+    foreach($hoadonst as $hd){
+        if($hd->status==0){
+        $output.=
+        '<tr>
+        <td> '.$hd->id.'</td>
+        <td> '.$hd->receiver_fullname.'</td>
+        <td> '.$hd->deliver_address.'</td>
+        <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+        <td>'.'
+        <span class="status text-success" style="color:red!important;">&bull;</span> Đang xác nhận đơn
+      '.' </td>
+        <td> '.number_format($hd->total).' <u>đ</u></td>
+        <td>'.'
+        <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+        '.'</td>
+        </tr>'; 
+        }
+        else if($hd->status==1){
+            $output.=
+            '<tr>
+            <td> '.$hd->id.'</td>
+            <td> '.$hd->receiver_fullname.'</td>
+            <td> '.$hd->deliver_address.'</td>
+            <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+            <td>'.'
+            <span class="status text-success" style="color:green!important;">&bull;</span>  Đã xác nhận Đơn, đang trong quá trình vận chuyển
+          '.' </td>
+            <td> '.number_format($hd->total).' <u>đ</u></td>
+            <td>'.'
+            <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+            '.'</td>
+            </tr>'; 
+            }
+            else if($hd->status==2){
+                $output.=
+                '<tr>
+                <td> '.$hd->id.'</td>
+                <td> '.$hd->receiver_fullname.'</td>
+                <td> '.$hd->deliver_address.'</td>
+                <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+                <td>'.'
+                <span class="status text-success" style="color:yellow!important;">&bull;</span> Đã giao hàng đến địa chỉ
+              '.' </td>
+                <td> '.number_format($hd->total).' <u>đ</u></td>
+                <td>'.'
+                <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+                '.'</td>
+                </tr>'; 
+                }
+                else{
+                    $output.=
+                '<tr>
+                <td> '.$hd->id.'</td>
+                <td> '.$hd->receiver_fullname.'</td>
+                <td> '.$hd->deliver_address.'</td>
+                <td> '.date_format($hd->created_at,"d/m/y H:i:s").'</td>
+                <td>'.'
+                <span class="status text-success" style="color:gray!important;">&bull;</span>  Đơn đã hủy
+              '.' </td>
+                <td> '.number_format($hd->total).' <u>đ</u></td>
+                <td>'.'
+                <a href="/bill-details/'.$hd->id.'" class="view" title="Xem chi tiết hóa đơn" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+                '.'</td>
+                </tr>'; 
+                }
+}
+return response($output);
+    }
+
 }
 
-
+public function aboutus(){
+    return view('giaodien.about_us');
+}
+public function contact(){
+    return view('giaodien.con_tact');
+}
 }

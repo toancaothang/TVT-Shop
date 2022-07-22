@@ -55,14 +55,15 @@ Route::get('/delete-cart/{id}',[KhachHangController::class,'deletecart'])->name(
 //xoa khoi giohang
 Route::get('/delete-all-cart',[KhachHangController::class,'deleteallcart'])->name('delete_all_cart');
 // them vao gio hang
-Route::post('/cart/{id}',[KhachHangController::class,'addcart'])->name('add_cart');
+Route::post('/cart/{id}',[KhachHangController::class,'addcart'])->name('add_cart')->middleware('CheckLogin');
 //them vao so sanh
-Route::post('/compare/{id}',[KhachHangController::class,'compare'])->name('com_pare');
+Route::post('/compare/{id}',[KhachHangController::class,'compare'])->name('com_pare')->middleware('CheckLogin');
 //update gio hang
 Route::post('update-cart',[KhachHangController::class,'updatecart'])->name('update_cart');
-
 //thanh toan
 Route::post('/checkout',[KhachHangController::class,'checkout'])->name('check_out');
+//thanh toan qc
+Route::get('/checkout-qc',[KhachHangController::class,'checkoutqc'])->name('checkout_qc');
 //huy don dat hang
 Route::post('/cancel-order/{id}',[KhachHangController::class,'cancelorder'])->name('cancel_order');
 //dat lai don
@@ -78,13 +79,15 @@ Route::get('/delete-coupon',[KhachHangController::class,'deletecoupon'])->name('
 //tim kiem ajax
 Route::get('/ajax-search-product',[KhachHangController::class,'ajaxsearch'])->name('ajax_search');
 //tim kiem binh thuong
-Route::post('/search-product',[KhachHangController::class,'search'])->name('search_product');
+Route::get('/search-product',[KhachHangController::class,'search'])->name('search_product');
 //Xoa san pham so sanh
 Route::get('/delete-compare',[KhachHangController::class,'deletecompare'])->name('delete_compare');
+//Xoa tung san pham so sanh
+Route::get('/delete-procompare',[KhachHangController::class,'deleteprocompare'])->name('delete_procompare');
 // them san pham tu wishlist vao cart
-Route::get('/wish-to-cart/{id}',[KhachHangController::class,'wishtocart'])->name('wishto_cart');
+Route::get('/wish-to-cart/{id}',[KhachHangController::class,'wishtocart'])->name('wishto_cart')->middleware('CheckLogin');
 //them compare vao cart
-Route::post('/compare-to-cart',[KhachHangController::class,'comparecart'])->name('compare_cart');
+Route::post('/compare-to-cart',[KhachHangController::class,'comparecart'])->name('compare_cart')->middleware('CheckLogin');
 
 Auth::routes();
 //checkout vnpay
@@ -95,6 +98,10 @@ Route::post('/checkout-vnpay',[KhachHangController::class,'checkoutvnpay'])->nam
 Route::get('/',[GiaoDienController::class,'httrangchu'])->name('htsp_trangchu')->middleware('CheckVerify');
 // mail xac nhan 
 Route::get('/actived-mail/{id}/{token}', [GiaoDienController::class, 'activedmail'])->name('actived_mail');
+//about us
+Route::get('/about-us',[GiaoDienController::class,'aboutus'])->name('about_us');
+//contact
+Route::get('/contact',[GiaoDienController::class,'contact'])->name('con_tact');
 //hien thi tat ca san pham
 Route::get('/product-all',[GiaoDienController::class,'allproduct'])->name('all_product');
 //hien thi san pham trong danh muc
@@ -129,13 +136,13 @@ Route::get('/selectsale',[GiaoDienController::class,'selectsale'])->name('select
 //thay doi thong tin gia sale category
 Route::get('/selectsalecate',[GiaoDienController::class,'selectsalecate'])->name('select_sale_cate');
 //hien thi gio hang
-Route::get('/cart',[GiaoDienController::class,'hienthicart'])->name('hienthi_cart');
+Route::get('/cart',[GiaoDienController::class,'hienthicart'])->name('hienthi_cart')->middleware('CheckLogin');
 //hien thi thong tin mua hang
-Route::get('/purchase-list',[GiaoDienController::class,'purchaselist'])->name('purchase_list');
+Route::get('/purchase-list',[GiaoDienController::class,'purchaselist'])->name('purchase_list')->middleware('CheckLogin');
 //tim kiem don hang
 Route::get('/searchhd',[GiaoDienController::class,'searchhd'])->name('search_hd');
 //hien thi chi tiet hoa don mua hang
-Route::get('/bill-details/{id}',[GiaoDienController::class,'billdetails'])->name('user_bill_details');
+Route::get('/bill-details/{id}',[GiaoDienController::class,'billdetails'])->name('user_bill_details')->middleware('CheckLogin');
 //hien thi so sanh san pham
 Route::get('/compare', function () {
     return view('giaodien.compare');

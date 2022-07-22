@@ -1,13 +1,14 @@
 @extends('layout/header_footer')
 @section('main')
 <head>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="/resources/demos/style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
   <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/Scripts/jquery.validate.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.js"></script> 
+    
 </head>
 <script >
   $(document).ready(function(){
@@ -76,24 +77,24 @@ filter.push($(this).val());
 });
 </script>
 <!--xu ly slider range price -->
-<script >
-  $(document).ready(function(){
+  <script>
+  $( function() {
     $( "#slider-range" ).slider({
       range: true,
-      min: 0,
-      max:20000000,
-      values: [ 1000000,10000000 ],
-      step=1000000,
-    slide: function( event, ui ) {
-        $( "#amount" ).val( "đ" + ui.values[ 0 ] + " - " + ui.values[ 1 ]+"đ" );
-        $( "#startprice" ).val( ui.values[ 0 ] );
-        $( "#endprice" ).val(ui.values[ 1 ] );
-       
+      min: 1000000,
+      max: 10000000,
+      steps:1000000,
+      values: [ 1000000, 10000000 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val(  ui.values[ 0 ] + "đ" + " - " + ui.values[ 1 ] + "đ" );
+        $( "#startprice" ).val(  ui.values[ 0 ]);
+        $( "#endprice" ).val(  ui.values[ 1 ]);
       }
     });
-
-});
-</script>
+    $( "#amount" ).val( "đ" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - đ" + $( "#slider-range" ).slider( "values", 1 ) );
+  } );
+  </script>
 <!--xu ly bien -->
 <script>
   $(document).ready(function(){
@@ -229,14 +230,15 @@ $.ajax({
                             </div>
                            
                             <!-- shop-top-bar end -->
-                            <!-- shop-products-wrapper start -->
-                            <div class="shop-products-wrapper ajaxupdate" id="">
+                           <!-- shop-products-wrapper start -->
+                           @if(count($productshow))
+                           <div class="shop-products-wrapper ajaxupdate" id="">
                                 <div class="tab-content">
                                     <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
                                         <div class="product-area shop-product-area">
                                             <div class="row">
                                            
-
+                                          
                                              @foreach($productshow as $value)
    
                                         <div class="col-lg-4 col-md-4 col-sm-6 mt-40" >
@@ -276,21 +278,8 @@ $.ajax({
                                             <button class="compare-btn" type="submit" style="border:none; background-color:white; color:#05A7FF;margin-left:-10px;margin-top:10px;" ><img src=" {{asset('images/menu/logo/compare.png')}}" style="width:27px;"alt="" >So Sánh</button>
 
                                            </form>
-                                           @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($value->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang==0)
-                                                                  <div class="price-box">
-                                                                <span class="new-price new-price-2" id=""> 
-                                                            Đã Hết Hàng
-                                                            </span>
-                                                              </div>
-                                                              @else
+                                           
+                                                                 
                                                                <div class="price-box">
                                                                 
                                                                 <form action="{{route('add_cart',['id'=>$value->id])}}" class="cart-quantity" method="POST" enctype="multipart/form-data" style="margin-top:-4px;">
@@ -306,7 +295,7 @@ $.ajax({
                                                         </span>
                                                         @endif
                                                                 </div>
-                                                                @endif 
+                                                              
                                                                 <div class="rating-box">
                                                                         <ul class="rating">
                                                                         @for($i=1;$i<=$value->total_rated;$i++)
@@ -321,13 +310,13 @@ $.ajax({
                                                             <div class="add-actions">
                                                                 <ul class="add-actions-link">
                                                                 <input class="cart-plus-minus-box " value="1" type="hidden" name="quaninput">
-                                                                @if($dahethang>0)
+                                                              
                                                                <li style="width:145px;"> <button class="add-cart active" type="submit" style="border:none;width:145px;background-color:#FFCB09;color:black;" > Thêm Vào Giỏ Hàng </button></li>
                                                                     
                                                                     </form> 
                                                                     
                                                                     <li><a href="#" title="Xem Nhanh Sản Phẩm" class="quick-view-btn" data-toggle="modal" data-target="#xemnhanh-{{$value->id}}"><i class="fa fa-eye"></i></a></li>
-                                                                    @endif
+                                                                  
                                                                     <form action="{{route('wish_list',['id'=>$value->id])}}" class="wishlist_add" method="POST">
                                                                 @csrf
                                                               <span id="wish-{{$value->id}}">
@@ -377,7 +366,7 @@ $.ajax({
                                     <div class="col-lg-7 col-md-6 col-sm-6">
                                         <div class="product-details-view-content pt-60">
                                             <div class="product-info">
-                                                <h2>{{$value->model_name}} </h2>
+                                                <h2 style="font-size:25px;">{{$value->model_name}} </h2>
                                             <div class="rating-box pt-20">
                                                     <ul class="rating rating-with-review-item">
                                                     @for($i=1;$i<=$value->total_rated;$i++)
@@ -413,12 +402,7 @@ $.ajax({
                                                             @endif
                                                 </div>
                                                 
-                                                <div class="product-desc">
-                                                    <p>
-                                                        <span>{{$value->description}}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                                
                                                 <div class="product-variants">
                                                     <div class="produt-variants-size">
                                                     <label>Chọn Mẫu Khác Của {{$value->model_name}} </label>
@@ -500,22 +484,7 @@ $.ajax({
                                                                         </div>
                                                                     </div>
                                                                     <h4><a class="product_name" href="{{route('chitiet_sanpham',['cateid'=>$value->category_id,'id'=>$value->id])}}">{{$value->model_name}}</a></h4>
-                                                                    @php
-                                               $dahethang=0;
-                                            @endphp
-                                            @foreach($value->getpro as $hethang)
-                                            @php
-                                               $dahethang+=$hethang->stock;
-                                            @endphp
-                                            @endforeach
-                                                                  @if($dahethang==0)
-                                                                  <div class="price-box">
-                                                                <span class="new-price new-price-2" id=""> 
-                                                            Đã Hết Hàng
-                                                            </span>
-                                                              </div>
-                                                              @else
-                                                                    <div class="price-box">
+                                                                     <div class="price-box">
                                                                     <form action="{{route('add_cart',['id'=>$value->id])}}" class="cart-quantity" method="POST" enctype="multipart/form-data" style="margin-top:-4px;">
                                                                     @csrf
                                                                     @php $exsale=$value->getpro->first()->sale*$value->getpro->first()->price/100; @endphp
@@ -530,13 +499,13 @@ $.ajax({
                                                             </span>
                                                             @endif
                                                                     </div>
-                                                                    @endif
+                                                                 
                                                                     <h5 class="manufacturer">
                                                                         @foreach($value->getpro as $getpro)
                                                                             
                                                                             <div class="update-bienthe" type="submit" data-type="{{$getpro->capacity}}" data-id="{{$value->id}}"tabindex="1" style="width:70px; padding-left:17px;padding-top:7px; margin-bottom:0px;margin-top:10px;" >{{$getpro->capacity}}GB</div>
                                                                         
-                                @endforeach
+                                                                 @endforeach
                                                                         <input type="hidden" value="<?php echo $value->id?>" id="produm-{{ $value->id }}" class="produm"/> 
                                                                         <input class="cart-plus-minus-box " value="1" type="hidden" name="quaninput">
                                                                 </h5>
@@ -548,9 +517,9 @@ $.ajax({
                                                             <div class="shop-add-action mb-xs-30">
                                                                 <ul class="add-actions-link">
                                               
-                                                                  @if($dahethang>0)
+                                                                
                                                                     <button type="submit" style="border:none;background-color:white;">Thêm Vào Giỏ Hàng</button>
-                                                                    @endif
+                                                                   
                                                                     </form>
                                                                     <form action="{{route('wish_list',['id'=>$value->id])}}" class="wishlist_add" method="POST">
                                                                     @csrf
@@ -572,19 +541,19 @@ $.ajax({
                                                 <button class="compare-btn" type="submit" style="border:none; background-color:white; color:#05A7FF;margin-left:-6px;" ><img src=" {{asset('images/menu/logo/compare.png')}}" style="width:27px;"alt="" >So Sánh</button>
 
                                             </form>
-                                            @if($dahethang>0)
+                                           
                                             <li style="margin-left:7px;"><a class="quick-view" data-toggle="modal" data-target="#exampleModalCenter" href="#"><i class="fa fa-eye"></i>Xem Nhanh Sản Phẩm</a></li>
-                                            @endif
+                                         
                                                             </div>
                                                        
                                                         </div>
                                                     </div>
                                                     @endforeach
-                                                    
                                                 </div>
                                             </div>
+                                             
                                         </div>
-                                    
+                                        
                                         <div class="paginatoin-area">
                                         {!!$productshow->links('giaodien/partials.paginate')!!}
                                             
@@ -592,6 +561,32 @@ $.ajax({
                                     </div>
                                 </div>
                                 <!-- shop-products-wrapper end -->
+                                @else
+ <!-- Error 404 Area Start -->
+ <div class="error404-area pt-30 pb-60">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="error-wrapper text-center ptb-50 pt-xs-20">
+                                <div class="error-text">
+                                   <h2>Chưa Có Sản Phẩm</h2>
+                                    <p>Shop sẽ cập nhật sản phẩm trong thời gian sớm nhất có thể </p>
+                                </div>
+                                <div class="search-error">
+                                <img src=" {{asset('images/menu/logo/nopro.jpg')}}" alt="" style="width:100px;" >
+                                </div>
+                                <div class="error-button" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Error 404 Area End -->
+
+
+                                
+                                @endif
                         </div>
                         <div class="col-lg-3 order-2 order-lg-1">
                             <!--sidebar-categores-box start  -->
@@ -602,27 +597,10 @@ $.ajax({
                             <div class="sidebar-categores-box">
                                 
                                 <div class="sidebar-title">
-                                    <h2>Lọc Sản Phẩm</h2>
+                                    <h2 style="color:#1256A1;">Lọc Sản Phẩm</h2>
                                 </div>
 
-                                <!-- filter-sub-area start -->
-                                <div class="filter-sub-area">
-                                    <h5 class="filter-sub-titel">Giá Từ:  </h5>
-                                    <div class="categori-checkbox">
-                                    <form>
-                            <p>
-                       <input type="text" id="amount" readonly style="border:0; color:green; font-weight:bold;background-color:#F4F4F4;">
-                       <input type="hidden" id="startprice" name="startprice" >
-                       <input type="hidden" id="endprice"name="endprice" >
-                        </p>
- 
-                        <div id="slider-range"></div><br>
-                        
-                       <!-- <button onclick="send()" type='button'> Cập Nhật Giá  </button>-->
-                            </form>
-                                    </div>
-                                 </div>
-                                <!-- filter-sub-area end -->
+                                
                                 <!-- filter-sub-area start -->
                                 <div class="filter-sub-area pt-sm-10 pt-xs-10">
                                     <h5 class="filter-sub-titel">Ram</h5>
@@ -661,21 +639,7 @@ $.ajax({
                                     </div>
                                 </div>
                                 <!-- filter-sub-area end -->
-                                <!-- filter-sub-area start -->
-                                <div class="filter-sub-area pt-sm-10 pt-xs-10">
-                                    <h5 class="filter-sub-titel">Màu Sắc</h5>
-                                    <div class="color-categoriy">
-                                        <form action="#">
-                                            <ul>
-                                                <li><span class="white"></span><button class="colorvalue" value="trắng" type="submit" style="border:none;color:black;font-size:15px;">Trắng </button></li>
-                                                <li><span class="black"></span><button class="colorvalue" value="Đen"type="submit" style="border:none;color:black;font-size:15px;">Đen</button></li>
-                                                <li><span class="Orange"></span><button class="colorvalue" value="Vàng" type="submit" style="border:none;color:black;font-size:15px;">Vàng </button></li>
-                                                <li><span class="Blue"></span><button  class="colorvalue" value="Xanh Dương" type="submit" style="border:none;color:black;font-size:15px;">Xanh Dương </button></li>
-                                            </ul>
-                                        </form>
-                                    </div>
-                                </div>
-                                <!-- filter-sub-area end -->
+                               
                                 <!-- filter-sub-area start -->
                                     
                                 <!-- filter-sub-area end -->
@@ -690,21 +654,6 @@ $.ajax({
                     </div>
                 </div>
             </div>
-            <script>
-                function send(){
-                    var start=$('#startprice').val();
-                    var end=$('#endprice').val();
-                    $.ajax({
-    
-    type:'get',
-   url:'product',
-    data: "start=" + start + "& end=" + end,
-    success:function (response){
-        console.log(response)
-      $('#updateDiv').html(response);
-    }
-    }); 
-                }
-                </script>
+           
     
 @stop()

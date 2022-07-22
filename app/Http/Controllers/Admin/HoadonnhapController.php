@@ -120,7 +120,7 @@ class HoadonnhapController extends Controller
             ->join('product_model', 'product_model.id', '=', 'product.model_id')
             ->where("product_model.status",1)
             ->where("product.status",1)
-            ->where("product_model.id",$id)
+            ->where("branch_id",$id)
             //->where("product_model.id",1)
             ->groupBy(DB::raw("SPid, product.capacity , product.color, product.model_id, product_model.model_name, product_model.image"))
             ->get(); 

@@ -34,7 +34,11 @@
                         <tbody id="listUser">
                           @foreach ($dskhachhang as $a)
                             <tr>
+                              @if($a->avatar)
                               <td style="padding-left: 30px"><img style="width:80px;height:80px" src="{!! url('users/'.$a->avatar.'') !!}"></td>
+                              @else
+                              <td style="padding-left: 30px"><img style="width:80px;height:80px" src="{{asset('images/menu/logo/davatar.png')}}"></td>
+                              @endif
                               <td>{{$a->full_name}}</td>
                               <td>0{{$a->phone_number}}</td>
                               <td>{{$a->address}}</td>

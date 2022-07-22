@@ -11,7 +11,7 @@
 body {
 	color: #566787;
 	background: #f5f5f5;
-	font-family: 'Rubik', sans-serif;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	font-size: 13px;
 }
 .table-responsive {
@@ -249,19 +249,19 @@ $(document).ready(function(){
                     <div class="col-sm-3">
                    </div>
                     <div class="col-sm-9">
-                        <button type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                        <div class="filter-group">
-                            <label>Mã Đơn</label>
+                       <div class="filter-group">
+                            <label>Tên Người Nhận</label>
                             <input type="text" class="form-control" id="searchhd">
                         </div>
                         
                         <div class="filter-group">
                             <label>Trạng Thái</label>
-                            <select class="form-control">
-                            <option>Chưa Xác Nhận</option>
-                                <option>Đang Giao</option>
-                                <option>Đã Giao</option>
-                                <option>Đã Hủy</option>
+                            <select class="form-control" id="statusvalue">
+							<option value="">Chọn Trạng Thái</option>
+							<option value="0">Chưa Xác Nhận</option>
+                            <option value="1">Đang Giao</option>
+                                <option value="2">Đã Giao</option>
+							<option value="3">Đã Hủy</option>
                            </select>
                         </div>
                         <span class="filter-icon"><i class="fa fa-filter"></i></span>
@@ -280,7 +280,8 @@ $(document).ready(function(){
                         <th>Xem Chi Tiết</th>
                     </tr>
                 </thead>
-                <tbody>
+			
+                <tbody class="alldata">
                     @foreach($hoadon as $hd)
                     <tr>
                         <td>A{{$hd->id}}</td>
@@ -310,7 +311,7 @@ $(document).ready(function(){
                     </tr>
 @endforeach
                 </tbody> 
-				<tbody id="contenthd"> </tbody>
+				<tbody id="contenthd" class="searchdata"> </tbody>
             </table>
             <div class="clearfix">
                
@@ -324,11 +325,40 @@ $(document).ready(function(){
 <script>
 	$('#searchhd').on('keyup',function(){
   $value=$(this).val();
-
+if($value){
+$('.alldata').hide();
+$('.searchdata').show();
+}
+else{
+	$('.alldata').show();
+$('.searchdata').hide();
+}
 $.ajax({
 type:'get',
 url:'{{URL::to('searchhd')}}',
 data:{'search':$value},
+success:function(data)
+{
+	console.log(data);
+	$('#contenthd').html(data);
+}
+});
+
+	});
+	$('#statusvalue').on('change',function(){
+  $valuestatus=$(this).val();
+if($valuestatus){
+$('.alldata').hide();
+$('.searchdata').show();
+}
+else{
+	$('.alldata').show();
+$('.searchdata').hide();
+}
+$.ajax({
+type:'get',
+url:'{{URL::to('searchhd')}}',
+data:{'statusvalue':$valuestatus},
 success:function(data)
 {
 	console.log(data);

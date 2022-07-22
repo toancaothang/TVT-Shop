@@ -207,7 +207,8 @@ else{
            'product.capacity',
            'product.price',
            'product.sale',
-    ]);     
+           'product.stock'
+    ]);    
    
     return redirect('/wishlist')->with(['messtontaiwishlist' => 'Đã thêm sản phẩm thành công']);
 
@@ -248,6 +249,7 @@ return redirect('/cart')->with(['cart' => 'Thêm Sán Phẩm Thành Công']);
      {
  $delpro=Cart::where('user_id',Auth::user()->id)->find($id);
  $delpro->delete();
+ Session::forget('totalafter');
  return redirect('/cart')->with(['cart' => 'Sản Phẩm Đã Được Xóa Khỏi Giỏ Hàng']);
      }
      //xoa tat ca khoi cart
@@ -262,7 +264,9 @@ return redirect('/cart')->with(['cart' => 'Thêm Sán Phẩm Thành Công']);
     //update cart
     public function updatecart(Request $request){
         $prod_id=$request->prodid;
+     
         $prod_qty=$request->cartquan;
+       // dd($prod_id,$prod_qty);
       $cart=Cart::where('product_id',$prod_id)->where('user_id',Auth::id())->first();
         $cart->pro_quantity=$prod_qty;
         $cart->update();
@@ -275,7 +279,6 @@ public function checkout(Request $req){
 
     $auth = Auth::user()->id;
  $totalafter=$req->total_after;
- Session::put('totalafter',$totalafter);
  $takecart = Cart::join('product_model','cart.pro_model_id','=','product_model.id')->
     join('product','cart.product_id','=','product.id')->where('product_model.status',1)->where('product.status',1)
     ->where('user_id',$auth)->get(['cart.id as cid',
@@ -284,6 +287,26 @@ public function checkout(Request $req){
        'product_model.image',
        'product.capacity',
        'product.price',
+       'product.stock',
+       'product.sale'
+       ]);
+    return view('giaodien.checkout',compact('takecart'));
+}
+// thanh toan quick cart
+public function checkoutqc(){
+
+    $auth = Auth::user()->id;
+ $totalafter=Session::get('total_after');
+ $takecart = Cart::join('product_model','cart.pro_model_id','=','product_model.id')->
+    join('product','cart.product_id','=','product.id')->where('product_model.status',1)->where('product.status',1)
+    ->where('user_id',$auth)->get(['cart.id as cid',
+       'cart.pro_quantity',
+       'product_model.model_name',
+       'product_model.image',
+       'product.capacity',
+       'product.price',
+       'product.stock',
+       'product.sale'
        ]);
     return view('giaodien.checkout',compact('takecart'));
 }
@@ -307,9 +330,12 @@ join('product','cart.product_id','=','product.id')->where('product_model.status'
    'product.capacity',
    'product.price',
    'cart.product_id','product_model.id as pid',
-   'product.sale',]);
+   'product.sale',
+'product.stock']);
 foreach($orderdetail as $detail)
 {
+    if($detail->stock>0)
+    {
     $exsale=$detail->price*$detail->sale/100;
  CTHoaDon::create([
 'bill_id'=>$order->id,
@@ -325,6 +351,7 @@ $soluongdatru=$ts->stock-$detail->pro_quantity;
 $ts->update(['stock' => $soluongdatru]);
 }
 
+}
 }
 $delcart=Cart::where('user_id',Auth::user()->id);
 $delcart->delete();
@@ -407,7 +434,7 @@ public function search(Request $request){
     if($request->searchdm==0){
     
         $data=ModelSP::join('product','product_model.id','=','product.model_id')->where('product_model.status',1)->where('product.status',1)->where('model_name','like','%'.$request->searchrs.'%')->orWhere('capacity','like','%'.$request->searchrs.'%')
-        ->get(['product_model.id as mid',
+        ->select(['product_model.id as mid',
         'product.id',
         'product_model.model_name',
         'product_model.category_id',
@@ -418,11 +445,11 @@ public function search(Request $request){
          'product.stock',
     
         
-    ]);
+    ])->paginate(20);
     }
     else{
 $data=ModelSP::join('product','product_model.id','=','product.model_id')->where('product_model.status',1)->where('product.status',1)->where('category_id','=',$request->searchdm)->where('model_name','like','%'.$request->searchrs.'%')->orWhere('capacity','like','%'.$request->searchrs.'%')
-->get(['product_model.id as mid',
+->select(['product_model.id as mid',
     'product.id',
     'product_model.model_name',
     'product_model.category_id',
@@ -432,7 +459,7 @@ $data=ModelSP::join('product','product_model.id','=','product.model_id')->where(
      'product_model.total_rated',
      'product.stock',
     
-]);
+])->paginate(20);
     }
 
 
@@ -486,11 +513,16 @@ public function compare(Request $req,$id)
 "ram"=>$takecompare->ram,
 "description"=>$takecompare->description,
 "rate"=>$takecompare->total_rated,
-
+"stock"=>$takecompare->stock,
+"cateid"=>$takecompare->category_id,
    ];
    Session::put('compare',$compare);
 
    return redirect('/compare');
+}
+public function deleteprocompare(){
+    
+
 }
 //them compare vao cart
 public function comparecart(Request $req){

@@ -95,13 +95,14 @@ success: function(response){
                                             <tr class="prod-data">
                                                 <td class="li-product-thumbnail"><a href="#"><img src="{{url('website/product')}}/{{$pc->image}}" alt="" style="width:100px;height:100px;"></a></td>
                                                 <td class="li-product-name"><a href="{{route('chitiet_sanpham',['cateid'=>$pc->category_id,'id'=>$pc->pid])}}">{{$pc->model_name}} {{$pc->capacity}} GB</a></td>
+                                                @if($pc->stock>0)
                                                 @php $exsale=$pc->sale*$pc->price/100;
                                                 $trueprice=$pc->price-$exsale;
                                                  @endphp
                                                 <td class="li-product-price"><span class="amount">{{number_format($trueprice)}} <u> đ</u></span></td>
                                                 <form action="{{route('update_cart')}}" method="POST" enctype="multipart/form-data">
                                         @csrf
-                                              <td class="quantity">
+                                          <td class="quantity">
                                                 <input type="hidden" class="prod_id" value="{{$pc->product_id}}" name="prodid"/>
                                                   <div class="cart-plus-minus">
                                                        <input class="cart-plus-minus-box qty-input" value="{{$pc->pro_quantity}}" type="text" name="cartquan">
@@ -114,10 +115,16 @@ success: function(response){
                                                 
                                              @php $subtotal=$trueprice * $pc->pro_quantity; @endphp
                                                 <td class="product-subtotal"><span class="amount"></span>{{number_format($subtotal)}} <u> đ</u></td>
+                                                @php $total+= $trueprice * $pc->pro_quantity; @endphp
+                                                @else
+                                                <td class="li-product-price" style="color:red;"><span class="amount">Hết Hàng</span></td>
+                                                <td class="li-product-price" style="color:red;"><span class="amount">Hết Hàng</span></td>
+                                                <td class="li-product-price" style="color:red;"><span class="amount">Hết Hàng</span></td>
+                                                @endif
                                                 <td class="li-product-remove"><a href="{{route('delete_cart',['id'=>$pc->cid])}}"><i class="fa fa-times"></i></a></td>
                                         </tr>
                                            
-                                            @php $total+= $trueprice * $pc->pro_quantity; @endphp
+                                          
                                             @endforeach
                                             
                                         </tbody>
@@ -154,6 +161,9 @@ success: function(response){
                                         @csrf
                                        <div class="cart-page-total">
                                             <h2>Tổng Thanh Toán</h2>
+                                            @php
+                                            $totaltosession=0;
+                                            @endphp
                                             <ul>
                                                 <li>Tạm Tính: <span>{{number_format($total)}} <u> đ</u></span></li>
                                                 @if(Session::get('coupon'))
@@ -166,15 +176,25 @@ success: function(response){
                                                 
                                               <li>Tổng Tiền: <span>{{number_format($total-$total_coupon)}} <u> đ</u></span></li>
                                               <input id="total_after" class="total" name="total_after" value="{{$total-$total_coupon}}"  type="hidden">
+                                              @php  $totaltosession=$total-$total_coupon;  @endphp
                                             </ul>
                                             <p style="font-size:15px;color:white; width:360px; background-color:#EF1E24; text-align:center;height:30px;margin-bottom:3px;margin-top:5px;border:dotted white 2px;font-weight:bold;display:inline-block;"> Đã Áp Dụng Mã Giảm Giá "{{$cou['coupon_code']}}" Giảm {{$cou['coupon_number']}} % </p> <span style="font-size:15px;color:white;width:30px; background-color:#EF1E24; text-align:center;height:30px;margin-bottom:3px;margin-top:5px;border:dotted white 2px;font-weight:bold;display:inline-block;"><a style="color:white;" href="{{route('delete_coupon')}}"> x </a></span>
                                            @endforeach
                                             @else
                                             <li>Tổng Tiền: <span>{{number_format($total)}} <u> đ</u></span></li>
                                             <input id="total_after" class="total" name="total_after" value="{{$total}}"  type="hidden">
+                                            @php $totaltosession=$total; @endphp
                                             </ul>
                                             @endif
+                                            <?php
+                                             session(['totalafter' => $totaltosession]);
+                                                ?>
+                                                     @php 
+                                        $cartcountqc=(App\Models\Cart::join('product_model','cart.pro_model_id','=','product_model.id')->join('product','cart.product_id','=','product.id')->where('user_id',Auth::user()->id)->where('product_model.status',1)->where('product.status',1)->where('product.stock','>',0)->sum('pro_quantity'));
+                                        @endphp
+                                        @if($cartcountqc)
                                             <button style="border:none;background-color:#333333;color:white;margin-top:5px;height:42px;border-radius:2px;width:200px;font-weight:bold;" type="submit"> Thanh Toán    </button> 
+                                            @endif
                                         </div>
                                         <form>
                                         @php
