@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        /**view()->composer('*',function($view){
+        view()->composer('*',function($view){
 $view->with(['category'=>DanhMuc::where('status',1)->orderBy('category_name','ASC')->get()
         ]);
         if (Auth::check()){
@@ -49,6 +49,6 @@ $view->with(['category'=>DanhMuc::where('status',1)->orderBy('category_name','AS
              
 
 });
- */
+
     }
 }
