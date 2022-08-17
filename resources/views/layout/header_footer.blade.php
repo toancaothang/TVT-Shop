@@ -195,7 +195,12 @@
                                         <li class="hm-minicart">
                                         <div class="hm-minicart-trigger">
                                                 <span class="item-icon"></span>
-                                                @if(Auth::check())
+                                                @if(Auth::check()==null)
+                                               
+                                                <span class="item-text">0<u> đ</u>
+                                                
+                                                </span>
+                                                @else
                                                 @php 
                                         $cartcount=(App\Models\Cart::join('product_model','cart.pro_model_id','=','product_model.id')->join('product','cart.product_id','=','product.id')->where('user_id',Auth::user()->id)->where('product_model.status',1)->where('product.status',1)->sum('pro_quantity'));
                                         @endphp

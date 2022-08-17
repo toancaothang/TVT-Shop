@@ -12,7 +12,9 @@ use App\Http\Controllers\GiaoDienController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+if(App::enviroment('production')){
+    URL::forceSchema('https');
+}
 Route::get('/', function () {
     return view('welcome');
 })->name('trangchu');
